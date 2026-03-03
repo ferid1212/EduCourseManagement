@@ -1,0 +1,19 @@
+
+spring:
+  application:
+    name: EduCourseManagementSystem
+
+  datasource:
+    url: jdbc:postgresql://localhost:5435/learn_db
+    username: ferid
+    password: ferid1234
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+
+server:
+  port: 8080
+
+
