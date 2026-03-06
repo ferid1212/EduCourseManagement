@@ -1,31 +1,24 @@
 package com.example.educoursemanagementsystem.entity;
 
+import com.example.educoursemanagementsystem.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
-import java.util.Set;
-
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Student {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    Long Id;
     String name;
-    String surname;
-    Integer age;
+    @Column(unique = true)
     String email;
-    String phone;
-    LocalDate registrationDate;
-
-
-
-
-
+    String password;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

@@ -4,28 +4,23 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
-import java.util.Set;
-
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Student {
+public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String name;
-    String surname;
-    Integer age;
-    String email;
-    String phone;
-    LocalDate registrationDate;
+    String title;
+    String videoURL;
+    @Column(length = 5000)
+    String content;
 
 
-
-
-
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
 }
