@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -20,14 +21,15 @@ public class Enrollment {
 
     @ManyToOne
     @JoinColumn(name = "student_id")
-    private Student student;
+     Student student;
 
     @ManyToOne
     @JoinColumn(name = "course_id")
-    private Course course;
+    Course course;
 
-    private LocalDate enrollmentDate;
+    LocalDate enrollmentDate;
+
 
     @Enumerated(EnumType.STRING)
-    private EnrollmentStatus status;
+    EnrollmentStatus status;
 }

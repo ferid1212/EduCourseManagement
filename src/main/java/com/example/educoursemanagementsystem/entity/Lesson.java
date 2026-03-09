@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -18,6 +20,9 @@ public class Lesson {
     String videoURL;
     @Column(length = 5000)
     String content;
+    LocalDateTime create_at;
+    LocalDateTime update_at;
+    Boolean isActive=true;
 
 
     @ManyToOne

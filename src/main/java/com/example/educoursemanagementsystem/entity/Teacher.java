@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -20,7 +22,16 @@ public class Teacher {
     String name;
     String email;
     String surname;
-    int age;
+    Integer age;
+    LocalDateTime create_at;
+    LocalDateTime update_at;
+    Boolean isActive=true;
+
+
+
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    Course course;
 
 
 }

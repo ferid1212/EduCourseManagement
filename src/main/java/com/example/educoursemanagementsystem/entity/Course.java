@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -12,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,8 +23,12 @@ public class Course {
     String description;
     Integer duration;
     Double price;
+    LocalDateTime create_at;
+    LocalDateTime update_at;
+    Boolean isActive=true;
 
 
-    @ManyToMany(mappedBy = "courses")
-    private Set<Teacher> teachers;
+    @OneToMany(mappedBy = "course")
+    List<Teacher> teachers;
+
 }

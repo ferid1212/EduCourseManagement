@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -23,6 +24,9 @@ public class Student {
     String email;
     String phone;
     LocalDate registrationDate;
+    LocalDateTime create_at;
+    LocalDateTime update_at;
+    Boolean isActive=true;
 
 
 
