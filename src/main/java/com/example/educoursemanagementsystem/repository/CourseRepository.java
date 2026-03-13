@@ -8,6 +8,12 @@ import java.util.Optional;
 public interface CourseRepository extends JpaRepository<Course,Long> {
     Optional<Course> findByTitleIgnoreCase(String title);
 
+    Optional<Course> findByIsActive(Boolean isActive);
+
+    Optional<Course> deleteCourseById(Long id);
+
+
+
 
 
 

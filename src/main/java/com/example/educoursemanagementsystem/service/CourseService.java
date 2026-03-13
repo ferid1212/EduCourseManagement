@@ -9,10 +9,14 @@ import java.util.List;
 public interface CourseService {
     CourseResponseDTO create(CourseRequestDTO courseRequestDTO);
     void delete (Long id);
+    void hardDelete(Long id);
     CourseDetailsResponseDTO getById(Long id);
     List<CourseResponseDTO> getAll();
+    List<CourseResponseDTO> getAllActiveCourse();
     List<CourseResponseDTO> searchByTitle(String title);
-    CourseResponseDTO update(Long id,CourseRequestDTO courseRequestDTO);
+    void update(Long id,CourseRequestDTO courseRequestDTO);
+
+
 
 
 }

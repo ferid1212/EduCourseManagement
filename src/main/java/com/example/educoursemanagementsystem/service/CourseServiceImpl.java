@@ -6,12 +6,14 @@ import com.example.educoursemanagementsystem.dto.response.CourseResponseDTO;
 import com.example.educoursemanagementsystem.entity.Course;
 import com.example.educoursemanagementsystem.mapper.EntityMapper;
 import com.example.educoursemanagementsystem.repository.CourseRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
 
@@ -42,6 +44,13 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public void hardDelete(Long id) {
+        Course course=courseRepository.deleteCourseById(id).orElseThrow(()->new RuntimeException("Course not found."));
+
+
+    }
+
+    @Override
     public CourseDetailsResponseDTO getById(Long id) {
         Course course=courseRepository.findById(id).orElseThrow(()->new RuntimeException("Course not found."));
         return mapper.toCourseDetailsResponseDTO(course);
@@ -55,6 +64,13 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public List<CourseResponseDTO> getAllActiveCourse() {
+        return courseRepository.findByIsActive(true).stream()
+                .map(mapper::toCourseResponseDTO)
+                .toList();
+    }
+
+    @Override
     public List<CourseResponseDTO> searchByTitle(String title) {
         return courseRepository.findByTitleIgnoreCase(title).stream()
                 .map(mapper::toCourseResponseDTO)
@@ -62,15 +78,14 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public CourseResponseDTO update(Long id, CourseRequestDTO courseRequestDTO) {
+    public void update(Long id, CourseRequestDTO courseRequestDTO) {
         Course course=courseRepository.findById(id).orElseThrow(()-> new RuntimeException("Course not found."));
         course.setTitle(courseRequestDTO.getTitle());
         course.setDescription(courseRequestDTO.getDescription());
         course.setDuration(courseRequestDTO.getDuration());
         course.setPrice(courseRequestDTO.getPrice());
-
         Course updated=courseRepository.save(course);
-        return  mapper.toCourseResponseDTO(updated);
+         mapper.toCourseResponseDTO(updated);
     }
 
 

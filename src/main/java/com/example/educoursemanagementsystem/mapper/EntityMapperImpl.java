@@ -20,8 +20,8 @@ public class EntityMapperImpl implements EntityMapper {
                 .description(course.getDescription())
                 .duration(course.getDuration())
                 .price(course.getPrice())
-                .create_at(course.getCreate_at())
-                .update_at(course.getUpdate_at())
+                .create_at(course.getCreateAt())
+                .update_at(course.getUpdateAt())
                 .isActive(course.getIsActive())
                 .build();
     }
@@ -37,8 +37,8 @@ public class EntityMapperImpl implements EntityMapper {
                 .description(course.getDescription())
                 .price(course.getPrice())
                 .duration(course.getDuration())
-                .create_at(course.getCreate_at())
-                .update_at(course.getUpdate_at())
+                .create_at(course.getCreateAt())
+                .update_at(course.getUpdateAt())
                 .teachers(course.getTeachers().stream()
                         .map(teacher -> {
                             return TeacherResponse.builder()
@@ -47,8 +47,8 @@ public class EntityMapperImpl implements EntityMapper {
                                     .surname(teacher.getSurname())
                                     .email(teacher.getEmail())
                                     .age(teacher.getAge())
-                                    .create_at(teacher.getCreate_at())
-                                    .update_at(teacher.getUpdate_at())
+                                    .create_at(teacher.getCreateAt())
+                                    .update_at(teacher.getUpdateAt())
                                     .build();
                         }).toList())
                 .build();

@@ -30,7 +30,7 @@ public class Lesson {
     Boolean isActive=true;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "course_id", nullable = false)
     Course course;
 }
