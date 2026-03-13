@@ -17,12 +17,17 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long Id;
+    @Column(nullable = false)
     String name;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     String email;
+    @Column(nullable = false)
     String password;
-    LocalDateTime create_at;
-    LocalDateTime update_at;
+    @Column(name = "create_at")
+    LocalDateTime createAt;
+    @Column(name = "update_at")
+    LocalDateTime updateAt;
+    @Column(name = "is_active")
     Boolean isActive=true;
     @Enumerated(EnumType.STRING)
      Role role;

@@ -19,17 +19,23 @@ public class Teacher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Column(nullable = false)
     String name;
+    @Column(unique = true, nullable = false)
     String email;
+    @Column(nullable = false)
     String surname;
     Integer age;
-    LocalDateTime create_at;
-    LocalDateTime update_at;
+    @Column(name = "create_at")
+    LocalDateTime createAt;
+    @Column(name = "update_at")
+    LocalDateTime updateAt;
+    @Column(name = "is_active")
     Boolean isActive=true;
 
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     Course course;
 
