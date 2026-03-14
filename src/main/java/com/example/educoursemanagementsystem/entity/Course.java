@@ -15,7 +15,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@SQLRestriction("is_active=true")
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

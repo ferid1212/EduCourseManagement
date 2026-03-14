@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class EntityMapperImpl implements EntityMapper {
+public class CourseMapperImpl implements CourseMapper {
     @Override
     public CourseResponseDTO toCourseResponseDTO(Course course) {
         if(course==null){

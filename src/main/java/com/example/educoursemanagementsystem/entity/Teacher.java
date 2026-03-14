@@ -4,6 +4,8 @@ package com.example.educoursemanagementsystem.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Teacher {
     @Id
@@ -27,8 +30,10 @@ public class Teacher {
     String surname;
     Integer age;
     @Column(name = "create_at")
+    @CreationTimestamp
     LocalDateTime createAt;
     @Column(name = "update_at")
+    @UpdateTimestamp
     LocalDateTime updateAt;
     @Column(name = "is_active")
     Boolean isActive=true;
@@ -39,5 +44,12 @@ public class Teacher {
     @JoinColumn(name = "course_id")
     Course course;
 
+
+    @PrePersist
+    public void prePersist() {
+        if (isActive == null) {
+            isActive = true;
+        }
+    }
 
 }

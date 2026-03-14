@@ -12,6 +12,10 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
 
     Optional<Course> deleteCourseById(Long id);
 
+    Optional<Course> getCourseByTeachersId(Long teacherId);
+
+
+
 
 
 

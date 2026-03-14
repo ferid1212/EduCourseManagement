@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/course")
+@RequestMapping("/courses")
 public class CourseController {
     private final CourseService courseService;
 
@@ -61,7 +61,7 @@ public class CourseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCourse(@PathVariable Long id,@RequestBody CourseRequestDTO courseRequestDTO){
+    public ResponseEntity<?> updateCourse(@PathVariable Long id,@Valid @RequestBody CourseRequestDTO courseRequestDTO){
       courseService.update(id,courseRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body("Course updated.");
     }
@@ -76,6 +76,16 @@ public class CourseController {
     public ResponseEntity<?> hardDeleteCourse(@PathVariable Long id){
         courseService.hardDelete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/teacher/{teacher_id}")
+    public ResponseEntity<?> getCoursesByTeacher(@PathVariable Long teacher_id){
+
+       List<CourseDetailsResponseDTO> response= courseService.getCoursesByTeacher(teacher_id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+
+
+
     }
 
 

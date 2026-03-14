@@ -4,21 +4,26 @@ import com.example.educoursemanagementsystem.dto.response.CourseDetailsResponseD
 import com.example.educoursemanagementsystem.dto.request.CourseRequestDTO;
 import com.example.educoursemanagementsystem.dto.response.CourseResponseDTO;
 import com.example.educoursemanagementsystem.entity.Course;
-import com.example.educoursemanagementsystem.mapper.EntityMapper;
+import com.example.educoursemanagementsystem.entity.Teacher;
+import com.example.educoursemanagementsystem.mapper.CourseMapper;
 import com.example.educoursemanagementsystem.repository.CourseRepository;
+import com.example.educoursemanagementsystem.repository.TeacherRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
-    private final EntityMapper mapper;
+    private final CourseMapper mapper;
+    private final TeacherRepository teacherRepository;
 
     @Override
     public CourseResponseDTO create(CourseRequestDTO courseRequestDTO) {
@@ -87,6 +92,18 @@ public class CourseServiceImpl implements CourseService {
         Course updated=courseRepository.save(course);
          mapper.toCourseResponseDTO(updated);
     }
+
+    @Override
+    public List<CourseDetailsResponseDTO> getCoursesByTeacher(Long teacherId) {
+        Teacher teacher=teacherRepository.findById(teacherId).orElseThrow(()->new RuntimeException("Teacher is not found."));
+        Course course = teacher.getCourse();
+        if (course == null) {
+            return List.of();
+        }
+
+        return List.of(mapper.toCourseDetailsResponseDTO(course));
+    }
+
 
 
 }
