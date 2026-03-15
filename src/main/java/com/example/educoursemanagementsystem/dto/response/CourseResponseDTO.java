@@ -1,14 +1,17 @@
 package com.example.educoursemanagementsystem.dto.response;
 
 import jakarta.validation.constraints.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
 
 @Data
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CourseResponseDTO {
      @NotNull(message = "ID is required")
      @Positive(message = "ID must be positive")

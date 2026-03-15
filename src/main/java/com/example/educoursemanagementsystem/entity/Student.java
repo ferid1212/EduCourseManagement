@@ -3,6 +3,8 @@ package com.example.educoursemanagementsystem.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,11 +31,11 @@ public class Student {
     @Column(unique = true, nullable = false)
     String email;
     String phone;
-    @Column(name = "registration_date")
-    LocalDate registrationDate;
     @Column(name = "create_at")
+    @CreationTimestamp
     LocalDateTime createAt;
     @Column(name = "update_at")
+    @UpdateTimestamp
     LocalDateTime updateAt;
     @Column(name = "is_active")
     Boolean isActive=true;
@@ -41,6 +43,14 @@ public class Student {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     List<Enrollment> enrollments = new ArrayList<>();
+
+
+    @PrePersist
+    public void prePersist() {
+        if (isActive == null) {
+            isActive = true;
+        }
+    }
 
 
 

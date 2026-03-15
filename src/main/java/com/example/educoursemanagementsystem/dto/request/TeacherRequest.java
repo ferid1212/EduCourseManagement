@@ -3,9 +3,12 @@ package com.example.educoursemanagementsystem.dto.request;
 
 import com.example.educoursemanagementsystem.entity.Course;
 import jakarta.validation.constraints.*;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TeacherRequest {
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
