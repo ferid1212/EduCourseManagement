@@ -3,8 +3,10 @@ package com.example.educoursemanagementsystem.service;
 
 import com.example.educoursemanagementsystem.dto.request.TeacherRequest;
 import com.example.educoursemanagementsystem.dto.response.TeacherResponse;
+import com.example.educoursemanagementsystem.entity.Course;
 import com.example.educoursemanagementsystem.entity.Teacher;
 import com.example.educoursemanagementsystem.mapper.TeacherMapper;
+import com.example.educoursemanagementsystem.repository.CourseRepository;
 import com.example.educoursemanagementsystem.repository.TeacherRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,18 +23,35 @@ import java.util.Optional;
 public class TeacherServiceImpl implements TeacherService{
 
     private final TeacherRepository teacherRepository;
+    private final CourseRepository courseRepository;
     private final TeacherMapper teacherMapper;
 
 
     @Override
     public TeacherResponse createTeacher(TeacherRequest request) {
-        Teacher teacher=Teacher.builder()
+
+        if (teacherRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Bu email artıq mövcuddur: " + request.getEmail());
+        }
+
+
+        Course course = null;
+        if (request.getCourseId() != null) {
+            course = courseRepository.findById(request.getCourseId())
+                    .orElseThrow(() -> new RuntimeException("Kurs tapılmadı: " + request.getCourseId()));
+        }
+
+
+        Teacher teacher = Teacher.builder()
                 .name(request.getName())
                 .surname(request.getSurname())
                 .age(request.getAge())
                 .email(request.getEmail())
+                .course(course)
                 .build();
-        Teacher saved=teacherRepository.save(teacher);
+
+
+        Teacher saved = teacherRepository.save(teacher);
         return teacherMapper.toTeacherResponse(saved);
     }
 
@@ -54,7 +73,7 @@ public class TeacherServiceImpl implements TeacherService{
     @Override
     public List<TeacherResponse> getAllActiveTeachers() {
 
-        return teacherRepository.getAllActiveTeachers().stream()
+        return teacherRepository.findByIsActive(true).stream()
                  .map(teacherMapper :: toTeacherResponse )
                  .toList();
     }

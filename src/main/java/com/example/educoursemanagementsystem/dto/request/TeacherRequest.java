@@ -23,6 +23,8 @@ public class TeacherRequest {
     @Min(value = 18, message = "Age must be at least 18")
     @Max(value = 100, message = "Age cannot exceed 100")
     Integer age;
+    @NotNull
+    Long courseId;
 
 
 

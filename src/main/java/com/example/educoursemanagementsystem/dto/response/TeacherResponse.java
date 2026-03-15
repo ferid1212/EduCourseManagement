@@ -32,5 +32,6 @@ public class TeacherResponse {
     LocalDateTime update_at;
     @NotNull(message = "Active status is required")
     Boolean isActive;
+    Course course;
 
 }

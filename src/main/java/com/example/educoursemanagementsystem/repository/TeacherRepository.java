@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TeacherRepository extends JpaRepository<Teacher,Long> {
-    Optional<Teacher> getAllActiveTeachers();
+    List<Teacher> findByIsActive(Boolean isActive);
     Optional<Teacher> deleteTeacherById(Long id);
     Optional<Teacher> getTeachersByEmail(String email);
     List<Teacher> getTeachersByName(String name);
+
+    boolean existsByEmail(String email);
+
 }
