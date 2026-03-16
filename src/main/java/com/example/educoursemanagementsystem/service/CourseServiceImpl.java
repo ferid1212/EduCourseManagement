@@ -75,6 +75,7 @@ public class CourseServiceImpl implements CourseService {
                 .toList();
     }
 
+    //GlobalException yaradan zaman buraya fikir ver.
     @Override
     public List<CourseResponseDTO> searchByTitle(String title) {
         return courseRepository.findByTitleIgnoreCase(title).stream()

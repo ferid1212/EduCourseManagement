@@ -110,6 +110,7 @@ public class TeacherServiceImpl implements TeacherService{
         return teacherMapper.toTeacherResponse(teacher);
     }
 
+    //GlobalException yaradan zaman buraya fikir ver.
     @Override
     public List<TeacherResponse> searchTeachersByName(String name) {
         List<TeacherResponse> teachers=teacherRepository.getTeachersByName(name).stream()
