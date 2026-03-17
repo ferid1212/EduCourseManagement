@@ -1,5 +1,5 @@
 package com.example.educoursemanagementsystem.enums;
 
 public enum EnrollmentStatus {
-    ACTIVE, COMPLETED
+    PENDING,ACTIVE, COMPLETED,CANCELLED,SUSPENDED
 }
