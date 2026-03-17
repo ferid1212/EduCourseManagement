@@ -1,6 +1,7 @@
 package com.example.educoursemanagementsystem.service;
 
 
+import com.example.educoursemanagementsystem.dto.request.CourseRequestDTO;
 import com.example.educoursemanagementsystem.dto.request.LessonRequest;
 import com.example.educoursemanagementsystem.dto.response.LessonResponse;
 import com.example.educoursemanagementsystem.entity.Course;
@@ -27,24 +28,21 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public LessonResponse createLesson(LessonRequest request) {
-
-        Course course = null;
-        if (request.getCourseId() != null) {
-            course = courseRepository.findById(request.getCourseId())
-                    .orElseThrow(() -> new RuntimeException("Kurs tapılmadı: " + request.getCourseId()));
+        if (request.getCourseId() == null) {
+            throw new RuntimeException("CourseId boş ola bilməz");
         }
 
+        Course course = courseRepository.findById(request.getCourseId())
+                .orElseThrow(() -> new RuntimeException("Kurs tapılmadı: " + request.getCourseId()));
 
-
-
-        Lesson lesson=Lesson.builder()
+        Lesson lesson = Lesson.builder()
                 .title(request.getTitle())
                 .videoURL(request.getVideoURL())
                 .content(request.getContent())
                 .course(course)
                 .build();
 
-        Lesson saved=lessonRepository.save(lesson);
+        Lesson saved = lessonRepository.save(lesson);
         return lessonMapper.toLessonResponse(saved);
     }
 

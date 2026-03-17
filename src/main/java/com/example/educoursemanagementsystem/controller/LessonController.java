@@ -1,6 +1,7 @@
 package com.example.educoursemanagementsystem.controller;
 
 
+import com.example.educoursemanagementsystem.dto.request.CourseRequestDTO;
 import com.example.educoursemanagementsystem.dto.request.LessonRequest;
 import com.example.educoursemanagementsystem.dto.response.LessonResponse;
 import com.example.educoursemanagementsystem.service.LessonService;
@@ -19,8 +20,8 @@ public class LessonController {
 
     private final LessonService lessonService;
 
-    @PostMapping
-    public ResponseEntity<LessonResponse> createLesson(@Valid @RequestBody LessonRequest lessonRequest){
+    @PostMapping()
+    public ResponseEntity<LessonResponse> createLesson( @Valid @RequestBody LessonRequest lessonRequest){
         LessonResponse response=lessonService.createLesson(lessonRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

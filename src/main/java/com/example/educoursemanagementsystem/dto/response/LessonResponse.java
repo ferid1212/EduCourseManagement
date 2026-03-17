@@ -29,5 +29,5 @@ public class LessonResponse {
     LocalDateTime updateAt;
     @NotNull(message = "Active status is required")
     Boolean isActive;
-    Course course;
+    String courseName;
 }

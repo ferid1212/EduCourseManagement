@@ -52,6 +52,8 @@ public class Course {
     @OneToMany(mappedBy = "course")
 
     List<Enrollment> enrollments = new ArrayList<>();
+
+
     @PrePersist
     public void prePersist() {
         if (isActive == null) {
