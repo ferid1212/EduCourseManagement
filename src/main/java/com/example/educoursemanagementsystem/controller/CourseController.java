@@ -10,6 +10,7 @@ import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class CourseController {
     private final CourseService courseService;
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping()
     public ResponseEntity<CourseResponseDTO> createCourse(@Valid @RequestBody CourseRequestDTO courseRequestDTO){
         CourseResponseDTO response=courseService.create(courseRequestDTO);
@@ -29,6 +31,7 @@ public class CourseController {
 
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<CourseDetailsResponseDTO> getCourseById(@PathVariable Long id){
         CourseDetailsResponseDTO response=courseService.getById(id);
@@ -36,6 +39,7 @@ public class CourseController {
 
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
     public ResponseEntity<?> getAllCourse(){
         List<CourseResponseDTO> response=courseService.getAll();
@@ -60,24 +64,28 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCourse(@PathVariable Long id,@Valid @RequestBody CourseRequestDTO courseRequestDTO){
       courseService.update(id,courseRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body("Course updated.");
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
         courseService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/hardDelete/{id}")
     public ResponseEntity<?> hardDeleteCourse(@PathVariable Long id){
         courseService.hardDelete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/teacher/{teacher_id}")
     public ResponseEntity<?> getCoursesByTeacher(@PathVariable Long teacher_id){
 

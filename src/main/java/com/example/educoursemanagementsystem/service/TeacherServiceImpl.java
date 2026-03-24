@@ -99,9 +99,8 @@ public class TeacherServiceImpl implements TeacherService{
 
     @Override
     public void hardDeleteTeacher(Long id) {
-        Teacher teacher=teacherRepository.deleteTeacherById(id).orElseThrow(()->new RuntimeException("Teacher not found."));
-
-
+        Teacher teacher = teacherRepository.findById(id).orElseThrow(()->new RuntimeException("Teacher not found."));
+        teacherRepository.delete(teacher);
     }
 
     @Override

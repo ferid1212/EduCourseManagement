@@ -50,9 +50,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void hardDelete(Long id) {
-        Course course=courseRepository.deleteCourseById(id).orElseThrow(()->new RuntimeException("Course not found."));
-
-
+        Course course = courseRepository.findById(id).orElseThrow(()->new RuntimeException("Course not found."));
+        courseRepository.delete(course);
     }
 
     @Override

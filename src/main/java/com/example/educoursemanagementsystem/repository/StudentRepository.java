@@ -10,6 +10,8 @@ public interface StudentRepository extends JpaRepository<Student,Long> {
 
     Boolean existsByEmail(String email);
 
+    Optional<Student> findByEmail(String email);
+
     List<Student> findByIsActive(Boolean isActive);
 
     Optional<Student> deleteStudentById(Long id);

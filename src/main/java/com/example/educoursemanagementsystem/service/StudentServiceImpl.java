@@ -76,7 +76,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     public void hardDeleteStudent(Long id){
-        Student student=studentRepository.deleteStudentById(id).orElseThrow(()->new RuntimeException("Student not found"));
+        Student student = studentRepository.findById(id).orElseThrow(()->new RuntimeException("Student not found"));
+        studentRepository.delete(student);
     }
 
 

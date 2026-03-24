@@ -5,6 +5,13 @@ import com.example.educoursemanagementsystem.dto.request.EnrollmentRequest;
 import com.example.educoursemanagementsystem.dto.response.EnrollmentResponse;
 import com.example.educoursemanagementsystem.enums.EnrollmentStatus;
 import com.example.educoursemanagementsystem.service.EnrollmentService;
+import com.example.educoursemanagementsystem.repository.UserRepository;
+import com.example.educoursemanagementsystem.repository.StudentRepository;
+import com.example.educoursemanagementsystem.repository.CourseRepository;
+import com.example.educoursemanagementsystem.entity.Course;
+import com.example.educoursemanagementsystem.entity.User;
+import com.example.educoursemanagementsystem.entity.Student;
+import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,10 +26,41 @@ import java.util.List;
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
+    private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
+    private final CourseRepository courseRepository;
 
     @PostMapping
     public ResponseEntity<EnrollmentResponse> createEnrollment(
             @Valid @RequestBody EnrollmentRequest request) {
+            
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Logged in user not found in DB"));
+                
+        Student student = studentRepository.findByEmail(email).orElse(null);
+        if (student == null) {
+            student = new Student();
+            student.setName(user.getFirstName());
+            student.setSurname(user.getLastName());
+            student.setEmail(user.getEmail());
+            student.setPhone(user.getPhone());
+            student.setIsActive(true);
+            student = studentRepository.save(student);
+        }
+        
+        request.setStudentId(student.getId());
+
+        if (request.getCourseName() != null && !request.getCourseName().trim().isEmpty()) {
+            Course course = courseRepository.findByTitleIgnoreCase(request.getCourseName())
+                    .orElseThrow(() -> new RuntimeException("Bu adda kurs tapılmadı: " + request.getCourseName()));
+            request.setCourseId(course.getId());
+        }
+
+        if (request.getCourseId() == null) {
+            throw new RuntimeException("Kursa yazılmaq üçün 'courseName' və ya 'courseId' qeyd edilməlidir!");
+        }
+
         EnrollmentResponse response = enrollmentService.enrollStudent(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
