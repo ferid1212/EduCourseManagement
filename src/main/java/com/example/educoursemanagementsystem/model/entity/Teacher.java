@@ -1,4 +1,5 @@
-package com.example.educoursemanagementsystem.entity;
+package com.example.educoursemanagementsystem.model.entity;
+
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,18 +14,19 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class Lesson {
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class Teacher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Column(nullable = false)
-    String title;
-    @Column(name = "video_url")
-    String videoURL;
-    @Column(length = 5000)
-    String content;
+    String name;
+    @Column(unique = true, nullable = false)
+    String email;
+    @Column(nullable = false)
+    String surname;
+    Integer age;
     @Column(name = "create_at")
     @CreationTimestamp
     LocalDateTime createAt;
@@ -35,9 +37,11 @@ public class Lesson {
     Boolean isActive=true;
 
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     Course course;
+
 
     @PrePersist
     public void prePersist() {
@@ -45,4 +49,5 @@ public class Lesson {
             isActive = true;
         }
     }
+
 }

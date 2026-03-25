@@ -1,7 +1,7 @@
 package com.example.educoursemanagementsystem.service;
 
-import com.example.educoursemanagementsystem.dto.request.EnrollmentRequest;
-import com.example.educoursemanagementsystem.dto.response.EnrollmentResponse;
+import com.example.educoursemanagementsystem.model.dto.request.EnrollmentRequest;
+import com.example.educoursemanagementsystem.model.dto.response.EnrollmentResponse;
 import com.example.educoursemanagementsystem.enums.EnrollmentStatus;
 
 import java.util.List;

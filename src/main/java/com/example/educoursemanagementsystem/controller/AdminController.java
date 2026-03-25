@@ -1,9 +1,8 @@
 package com.example.educoursemanagementsystem.controller;
 
-import com.example.educoursemanagementsystem.dto.RegisterRequest;
-import com.example.educoursemanagementsystem.entity.Teacher;
-import com.example.educoursemanagementsystem.entity.Course;
-import com.example.educoursemanagementsystem.entity.User;
+import com.example.educoursemanagementsystem.model.dto.request.RegisterRequest;
+import com.example.educoursemanagementsystem.model.entity.Teacher;
+import com.example.educoursemanagementsystem.model.entity.User;
 import com.example.educoursemanagementsystem.enums.Role;
 import com.example.educoursemanagementsystem.repository.UserRepository;
 import com.example.educoursemanagementsystem.repository.TeacherRepository;

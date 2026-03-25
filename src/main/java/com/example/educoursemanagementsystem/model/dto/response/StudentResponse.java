@@ -1,13 +1,20 @@
-package com.example.educoursemanagementsystem.dto.request;
+package com.example.educoursemanagementsystem.model.dto.response;
 
 import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Data
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StudentRequest {
+public class StudentResponse {
+    @NotNull(message = "ID is required")
+    @Positive(message = "ID must be positive")
+    Long id;
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name can only contain letters and spaces")
@@ -26,7 +33,8 @@ public class StudentRequest {
     String email;
     @Pattern(regexp = "^994(50|51|55|99|70|77|10)\\d{7}$",message = "Please,Enter correct format for phone")
     String phone;
-
-
-
+    LocalDateTime create_at;
+    LocalDateTime update_at;
+    @NotNull(message = "Active status is required")
+    Boolean isActive;
 }

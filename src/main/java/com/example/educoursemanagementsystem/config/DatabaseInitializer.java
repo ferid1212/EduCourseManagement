@@ -1,6 +1,6 @@
 package com.example.educoursemanagementsystem.config;
 
-import com.example.educoursemanagementsystem.entity.User;
+import com.example.educoursemanagementsystem.model.entity.User;
 import com.example.educoursemanagementsystem.enums.Role;
 import com.example.educoursemanagementsystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

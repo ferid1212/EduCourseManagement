@@ -1,8 +1,7 @@
 package com.example.educoursemanagementsystem.service;
 
-import com.example.educoursemanagementsystem.dto.request.CourseRequestDTO;
-import com.example.educoursemanagementsystem.dto.request.LessonRequest;
-import com.example.educoursemanagementsystem.dto.response.LessonResponse;
+import com.example.educoursemanagementsystem.model.dto.request.LessonRequest;
+import com.example.educoursemanagementsystem.model.dto.response.LessonResponse;
 
 import java.util.List;
 

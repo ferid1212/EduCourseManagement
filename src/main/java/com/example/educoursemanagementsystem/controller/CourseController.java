@@ -1,14 +1,12 @@
 package com.example.educoursemanagementsystem.controller;
 
-import com.example.educoursemanagementsystem.dto.request.CourseRequestDTO;
-import com.example.educoursemanagementsystem.dto.response.CourseDetailsResponseDTO;
-import com.example.educoursemanagementsystem.dto.response.CourseResponseDTO;
+import com.example.educoursemanagementsystem.model.dto.request.CourseRequestDTO;
+import com.example.educoursemanagementsystem.model.dto.response.CourseDetailsResponseDTO;
+import com.example.educoursemanagementsystem.model.dto.response.CourseResponseDTO;
 import com.example.educoursemanagementsystem.service.CourseService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

@@ -1,8 +1,7 @@
 package com.example.educoursemanagementsystem.mapper;
 
-import com.example.educoursemanagementsystem.dto.response.CourseResponseDTO;
-import com.example.educoursemanagementsystem.dto.response.TeacherResponse;
-import com.example.educoursemanagementsystem.entity.Teacher;
+import com.example.educoursemanagementsystem.model.dto.response.TeacherResponse;
+import com.example.educoursemanagementsystem.model.entity.Teacher;
 import org.springframework.stereotype.Component;
 
 @Component

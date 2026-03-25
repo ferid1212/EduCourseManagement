@@ -1,6 +1,6 @@
 package com.example.educoursemanagementsystem.repository;
 
-import com.example.educoursemanagementsystem.entity.Teacher;
+import com.example.educoursemanagementsystem.model.entity.Teacher;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

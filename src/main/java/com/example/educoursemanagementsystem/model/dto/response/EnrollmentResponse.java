@@ -1,4 +1,4 @@
-package com.example.educoursemanagementsystem.dto.response;
+package com.example.educoursemanagementsystem.model.dto.response;
 
 
 import com.example.educoursemanagementsystem.enums.EnrollmentStatus;

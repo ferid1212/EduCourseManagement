@@ -1,10 +1,10 @@
 package com.example.educoursemanagementsystem.controller;
 
 import com.example.educoursemanagementsystem.config.JwtService;
-import com.example.educoursemanagementsystem.dto.AuthRequest;
-import com.example.educoursemanagementsystem.dto.AuthResponse;
-import com.example.educoursemanagementsystem.dto.RegisterRequest;
-import com.example.educoursemanagementsystem.entity.User;
+import com.example.educoursemanagementsystem.model.dto.request.AuthRequest;
+import com.example.educoursemanagementsystem.model.dto.response.AuthResponse;
+import com.example.educoursemanagementsystem.model.dto.request.RegisterRequest;
+import com.example.educoursemanagementsystem.model.entity.User;
 import com.example.educoursemanagementsystem.enums.Role;
 import com.example.educoursemanagementsystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

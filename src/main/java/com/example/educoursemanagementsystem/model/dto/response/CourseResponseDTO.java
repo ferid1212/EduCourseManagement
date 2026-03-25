@@ -1,4 +1,4 @@
-package com.example.educoursemanagementsystem.dto.response;
+package com.example.educoursemanagementsystem.model.dto.response;
 
 import jakarta.validation.constraints.*;
 import lombok.AccessLevel;

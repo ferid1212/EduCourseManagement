@@ -1,13 +1,15 @@
-package com.example.educoursemanagementsystem.service;
+package com.example.educoursemanagementsystem.service.impl;
 
-import com.example.educoursemanagementsystem.dto.response.CourseDetailsResponseDTO;
-import com.example.educoursemanagementsystem.dto.request.CourseRequestDTO;
-import com.example.educoursemanagementsystem.dto.response.CourseResponseDTO;
-import com.example.educoursemanagementsystem.entity.Course;
-import com.example.educoursemanagementsystem.entity.Teacher;
+import com.example.educoursemanagementsystem.exception.ResourceNotFoundException;
+import com.example.educoursemanagementsystem.model.dto.response.CourseDetailsResponseDTO;
+import com.example.educoursemanagementsystem.model.dto.request.CourseRequestDTO;
+import com.example.educoursemanagementsystem.model.dto.response.CourseResponseDTO;
+import com.example.educoursemanagementsystem.model.entity.Course;
+import com.example.educoursemanagementsystem.model.entity.Teacher;
 import com.example.educoursemanagementsystem.mapper.CourseMapper;
 import com.example.educoursemanagementsystem.repository.CourseRepository;
 import com.example.educoursemanagementsystem.repository.TeacherRepository;
+import com.example.educoursemanagementsystem.service.CourseService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,20 +45,20 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void delete(Long id) {
-        Course course=courseRepository.findById(id).orElseThrow(()->new RuntimeException("Course not found."));
+        Course course=courseRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Course not found."));
         course.setIsActive(false);
         courseRepository.save(course);
     }
 
     @Override
     public void hardDelete(Long id) {
-        Course course = courseRepository.findById(id).orElseThrow(()->new RuntimeException("Course not found."));
+        Course course = courseRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Course not found."));
         courseRepository.delete(course);
     }
 
     @Override
     public CourseDetailsResponseDTO getById(Long id) {
-        Course course=courseRepository.findById(id).orElseThrow(()->new RuntimeException("Course not found."));
+        Course course=courseRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Course not found."));
         return mapper.toCourseDetailsResponseDTO(course);
     }
 
@@ -84,7 +86,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void update(Long id, CourseRequestDTO courseRequestDTO) {
-        Course course=courseRepository.findById(id).orElseThrow(()-> new RuntimeException("Course not found."));
+        Course course=courseRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Course not found."));
         course.setTitle(courseRequestDTO.getTitle());
         course.setDescription(courseRequestDTO.getDescription());
         course.setDuration(courseRequestDTO.getDuration());
@@ -95,7 +97,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseDetailsResponseDTO> getCoursesByTeacher(Long teacherId) {
-        Teacher teacher=teacherRepository.findById(teacherId).orElseThrow(()->new RuntimeException("Teacher is not found."));
+        Teacher teacher=teacherRepository.findById(teacherId).orElseThrow(()->new ResourceNotFoundException("Teacher is not found."));
         Course course = teacher.getCourse();
         if (course == null) {
             return List.of();

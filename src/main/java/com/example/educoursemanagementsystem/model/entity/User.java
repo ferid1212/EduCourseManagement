@@ -1,4 +1,4 @@
-package com.example.educoursemanagementsystem.entity;
+package com.example.educoursemanagementsystem.model.entity;
 
 import com.example.educoursemanagementsystem.enums.Role;
 import jakarta.persistence.*;

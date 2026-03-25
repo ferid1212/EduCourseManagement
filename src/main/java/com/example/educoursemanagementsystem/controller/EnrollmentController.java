@@ -1,16 +1,16 @@
 package com.example.educoursemanagementsystem.controller;
 
 
-import com.example.educoursemanagementsystem.dto.request.EnrollmentRequest;
-import com.example.educoursemanagementsystem.dto.response.EnrollmentResponse;
+import com.example.educoursemanagementsystem.model.dto.request.EnrollmentRequest;
+import com.example.educoursemanagementsystem.model.dto.response.EnrollmentResponse;
 import com.example.educoursemanagementsystem.enums.EnrollmentStatus;
 import com.example.educoursemanagementsystem.service.EnrollmentService;
 import com.example.educoursemanagementsystem.repository.UserRepository;
 import com.example.educoursemanagementsystem.repository.StudentRepository;
 import com.example.educoursemanagementsystem.repository.CourseRepository;
-import com.example.educoursemanagementsystem.entity.Course;
-import com.example.educoursemanagementsystem.entity.User;
-import com.example.educoursemanagementsystem.entity.Student;
+import com.example.educoursemanagementsystem.model.entity.Course;
+import com.example.educoursemanagementsystem.model.entity.User;
+import com.example.educoursemanagementsystem.model.entity.Student;
 import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

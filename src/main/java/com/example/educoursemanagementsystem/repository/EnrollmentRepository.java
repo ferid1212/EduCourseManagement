@@ -1,8 +1,7 @@
 package com.example.educoursemanagementsystem.repository;
 
-import com.example.educoursemanagementsystem.entity.Enrollment;
+import com.example.educoursemanagementsystem.model.entity.Enrollment;
 import com.example.educoursemanagementsystem.enums.EnrollmentStatus;
-import jdk.jfr.Registered;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

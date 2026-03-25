@@ -1,10 +1,13 @@
-package com.example.educoursemanagementsystem.service;
+package com.example.educoursemanagementsystem.service.impl;
 
-import com.example.educoursemanagementsystem.dto.request.StudentRequest;
-import com.example.educoursemanagementsystem.dto.response.StudentResponse;
-import com.example.educoursemanagementsystem.entity.Student;
+import com.example.educoursemanagementsystem.exception.AlreadyExistsException;
+import com.example.educoursemanagementsystem.exception.ResourceNotFoundException;
+import com.example.educoursemanagementsystem.model.dto.request.StudentRequest;
+import com.example.educoursemanagementsystem.model.dto.response.StudentResponse;
+import com.example.educoursemanagementsystem.model.entity.Student;
 import com.example.educoursemanagementsystem.mapper.StudentMapper;
 import com.example.educoursemanagementsystem.repository.StudentRepository;
+import com.example.educoursemanagementsystem.service.StudentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +25,7 @@ public class StudentServiceImpl implements StudentService {
 
     public StudentResponse createStudent(StudentRequest request){
         if(studentRepository.existsByEmail(request.getEmail())){
-            throw new RuntimeException("Bu email artıq mövcuddur: " + request.getEmail());
+            throw new AlreadyExistsException("Bu email artıq mövcuddur: " + request.getEmail());
         }
 
         Student student=Student.builder()
@@ -38,7 +41,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     public StudentResponse getStudentById(Long id){
-        Student student=studentRepository.findById(id).orElseThrow(()->new RuntimeException("Student not found"));
+        Student student=studentRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Student not found"));
         return studentMapper.toStudentResponse(student);
     }
 
@@ -57,7 +60,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     public void updateStudent(Long id,StudentRequest request){
-        Student student=studentRepository.findById(id).orElseThrow(()->new RuntimeException("Student not found"));
+        Student student=studentRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Student not found"));
         student.setName(request.getName());
         student.setSurname(request.getSurname());
         student.setAge(request.getAge());
@@ -69,14 +72,14 @@ public class StudentServiceImpl implements StudentService {
     }
 
     public void softDeleteStudent(Long id){
-        Student student=studentRepository.findById(id).orElseThrow(()->new RuntimeException("Student not found"));
+        Student student=studentRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Student not found"));
         student.setIsActive(false);
         studentRepository.save(student);
 
     }
 
     public void hardDeleteStudent(Long id){
-        Student student = studentRepository.findById(id).orElseThrow(()->new RuntimeException("Student not found"));
+        Student student = studentRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Student not found"));
         studentRepository.delete(student);
     }
 

@@ -1,5 +1,4 @@
-package com.example.educoursemanagementsystem.entity;
-
+package com.example.educoursemanagementsystem.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,27 +7,24 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Teacher {
+@Builder
+public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Column(nullable = false)
-    String name;
-    @Column(unique = true, nullable = false)
-    String email;
-    @Column(nullable = false)
-    String surname;
-    Integer age;
+    String title;
+    @Column(name = "video_url")
+    String videoURL;
+    @Column(length = 5000)
+    String content;
     @Column(name = "create_at")
     @CreationTimestamp
     LocalDateTime createAt;
@@ -39,11 +35,9 @@ public class Teacher {
     Boolean isActive=true;
 
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     Course course;
-
 
     @PrePersist
     public void prePersist() {
@@ -51,5 +45,4 @@ public class Teacher {
             isActive = true;
         }
     }
-
 }

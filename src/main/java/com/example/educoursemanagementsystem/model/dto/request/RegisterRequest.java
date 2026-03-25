@@ -1,4 +1,4 @@
-package com.example.educoursemanagementsystem.dto;
+package com.example.educoursemanagementsystem.model.dto.request;
 
 import lombok.Data;
 

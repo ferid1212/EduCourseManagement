@@ -1,14 +1,15 @@
-package com.example.educoursemanagementsystem.service;
+package com.example.educoursemanagementsystem.service.impl;
 
 
-import com.example.educoursemanagementsystem.dto.request.CourseRequestDTO;
-import com.example.educoursemanagementsystem.dto.request.LessonRequest;
-import com.example.educoursemanagementsystem.dto.response.LessonResponse;
-import com.example.educoursemanagementsystem.entity.Course;
-import com.example.educoursemanagementsystem.entity.Lesson;
+import com.example.educoursemanagementsystem.exception.ResourceNotFoundException;
+import com.example.educoursemanagementsystem.model.dto.request.LessonRequest;
+import com.example.educoursemanagementsystem.model.dto.response.LessonResponse;
+import com.example.educoursemanagementsystem.model.entity.Course;
+import com.example.educoursemanagementsystem.model.entity.Lesson;
 import com.example.educoursemanagementsystem.mapper.LessonMapper;
 import com.example.educoursemanagementsystem.repository.CourseRepository;
 import com.example.educoursemanagementsystem.repository.LessonRepository;
+import com.example.educoursemanagementsystem.service.LessonService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class LessonServiceImpl implements LessonService {
         }
 
         Course course = courseRepository.findById(request.getCourseId())
-                .orElseThrow(() -> new RuntimeException("Kurs tapılmadı: " + request.getCourseId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Kurs tapılmadı: " + request.getCourseId()));
 
         Lesson lesson = Lesson.builder()
                 .title(request.getTitle())
@@ -48,7 +49,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public LessonResponse getLessonById(Long id) {
-        Lesson lesson=lessonRepository.findById(id).orElseThrow(()->new RuntimeException("Lesson not found"));
+        Lesson lesson=lessonRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Lesson not found"));
         return lessonMapper.toLessonResponse(lesson);
     }
 
@@ -90,7 +91,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public LessonResponse updateVideoUrl(Long lessonId, String videoUrl) {
-        Lesson lesson=lessonRepository.findById(lessonId).orElseThrow(()->new RuntimeException("Lesson not found"));
+        Lesson lesson=lessonRepository.findById(lessonId).orElseThrow(()->new ResourceNotFoundException("Lesson not found"));
         lesson.setVideoURL(videoUrl);
         Lesson updated= lessonRepository.save(lesson);
         return lessonMapper.toLessonResponse(updated);
@@ -99,14 +100,14 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public void softDeleteLesson(Long id) {
-        Lesson lesson=lessonRepository.findById(id).orElseThrow(()->new RuntimeException("Lesson not found"));
+        Lesson lesson=lessonRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Lesson not found"));
         lesson.setIsActive(false);
         lessonRepository.save(lesson);
     }
 
     @Override
     public void hardDeleteLesson(Long id) {
-        Lesson lesson=lessonRepository.deleteLessonById(id).orElseThrow(()->new RuntimeException("Lesson not found"));
+        Lesson lesson=lessonRepository.deleteLessonById(id).orElseThrow(()->new ResourceNotFoundException("Lesson not found"));
 
 
     }

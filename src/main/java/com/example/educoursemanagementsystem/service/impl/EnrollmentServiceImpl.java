@@ -1,11 +1,11 @@
-package com.example.educoursemanagementsystem.service;
+package com.example.educoursemanagementsystem.service.impl;
 
 
-import com.example.educoursemanagementsystem.dto.request.EnrollmentRequest;
-import com.example.educoursemanagementsystem.dto.response.EnrollmentResponse;
-import com.example.educoursemanagementsystem.entity.Course;
-import com.example.educoursemanagementsystem.entity.Enrollment;
-import com.example.educoursemanagementsystem.entity.Student;
+import com.example.educoursemanagementsystem.model.dto.request.EnrollmentRequest;
+import com.example.educoursemanagementsystem.model.dto.response.EnrollmentResponse;
+import com.example.educoursemanagementsystem.model.entity.Course;
+import com.example.educoursemanagementsystem.model.entity.Enrollment;
+import com.example.educoursemanagementsystem.model.entity.Student;
 import com.example.educoursemanagementsystem.enums.EnrollmentStatus;
 import com.example.educoursemanagementsystem.exception.AlreadyExistsException;
 import com.example.educoursemanagementsystem.exception.ResourceNotFoundException;
@@ -13,6 +13,7 @@ import com.example.educoursemanagementsystem.mapper.EnrollmentMapper;
 import com.example.educoursemanagementsystem.repository.CourseRepository;
 import com.example.educoursemanagementsystem.repository.EnrollmentRepository;
 import com.example.educoursemanagementsystem.repository.StudentRepository;
+import com.example.educoursemanagementsystem.service.EnrollmentService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
