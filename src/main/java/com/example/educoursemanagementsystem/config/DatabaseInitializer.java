@@ -25,6 +25,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             admin.setLastName("Admin");
             admin.setRole(Role.ADMIN);
             admin.setIsActive(true);
+            admin.setPhone("994501234567");
 
             userRepository.save(admin);
             System.out.println("Avtomatik ADMIN yaradildi: admin@example.com / admin123");

@@ -29,7 +29,11 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> claims = new HashMap<>();
+        if (userDetails.getAuthorities() != null && !userDetails.getAuthorities().isEmpty()) {
+            claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
+        }
+        return generateToken(claims, userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {

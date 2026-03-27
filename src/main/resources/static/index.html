@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduCourse — Kurs İdarəetmə Sistemi</title>
+  <meta name="description" content="EduCourse Management System — Kurslar, müəllimlər, tələbələr və dərsləri idarə edin." />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- ============ AUTH SCREEN ============ -->
+<div id="auth-screen">
+  <div class="auth-container">
+    <div class="auth-header">
+      <span class="auth-logo">🎓</span>
+      <h1>EduCourse</h1>
+      <p>Kurs İdarəetmə Sistemi</p>
+    </div>
+    <div class="auth-box">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Daxil ol</button>
+        <button class="auth-tab" data-tab="register">Qeydiyyat</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="email@example.com" required />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Şifrə</label>
+          <input type="password" id="login-password" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-full mt-4">🔐 Daxil ol</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="hidden">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-firstname">Ad</label>
+            <input type="text" id="reg-firstname" placeholder="Ad" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-lastname">Soyad</label>
+            <input type="text" id="reg-lastname" placeholder="Soyad" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-email">Email</label>
+            <input type="email" id="reg-email" placeholder="email@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-age">Yaş</label>
+            <input type="number" id="reg-age" placeholder="20" min="15" max="100" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Şifrə</label>
+          <input type="password" id="reg-password" placeholder="••••••••" required minlength="6" />
+        </div>
+        <div class="form-group">
+          <label for="reg-phone">Telefon (ixtiyari)</label>
+          <input type="text" id="reg-phone" placeholder="994501234567" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-full mt-4">🚀 Qeydiyyatdan keç</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP SCREEN ============ -->
+<button id="mobile-toggle" class="mobile-toggle">☰</button>
+
+<div id="app-screen">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h2>🎓 EduCourse</h2>
+      <span>İdarəetmə Sistemi</span>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-details">
+          <h4 id="user-email">user@email.com</h4>
+          <span id="user-role">ROLE</span>
+        </div>
+      </div>
+      <button id="btn-logout" class="btn-logout">🚪 Çıxış</button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+
+    <!-- ======= DASHBOARD ======= -->
+    <div id="section-dashboard" class="section-page active">
+      <div class="main-header">
+        <div>
+          <h1>İdarə Paneli</h1>
+          <p>Ümumi baxış və statistika</p>
+        </div>
+      </div>
+      <div id="dashboard-stats" class="stats-grid"></div>
+    </div>
+
+    <!-- ======= COURSES ======= -->
+    <div id="section-courses" class="section-page">
+      <div class="main-header">
+        <div>
+          <h1>Kurslar</h1>
+          <p>Bütün kursları idarə edin</p>
+        </div>
+        <div class="header-actions">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" placeholder="Kurs axtar..." id="course-search" oninput="Courses.search(this.value)" />
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="Courses.openCreate()" id="btn-create-course">➕ Yeni Kurs</button>
+        </div>
+      </div>
+      <div class="data-section">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ad</th>
+              <th>Təsvir</th>
+              <th>Müddət</th>
+              <th>Qiymət</th>
+              <th>Status</th>
+              <th>Tarix</th>
+              <th>Əməliyyat</th>
+            </tr>
+          </thead>
+          <tbody id="courses-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======= TEACHERS ======= -->
+    <div id="section-teachers" class="section-page">
+      <div class="main-header">
+        <div>
+          <h1>Müəllimlər</h1>
+          <p>Müəllimləri idarə edin</p>
+        </div>
+        <div class="header-actions">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" placeholder="Ad ilə axtar..." id="teacher-search" oninput="Teachers.search(this.value)" />
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="Teachers.openCreate()">➕ Yeni Müəllim</button>
+        </div>
+      </div>
+      <div class="data-section">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ad Soyad</th>
+              <th>Email</th>
+              <th>Telefon</th>
+              <th>Yaş</th>
+              <th>Kurs</th>
+              <th>Status</th>
+              <th>Əməliyyat</th>
+            </tr>
+          </thead>
+          <tbody id="teachers-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======= STUDENTS ======= -->
+    <div id="section-students" class="section-page">
+      <div class="main-header">
+        <div>
+          <h1>Tələbələr</h1>
+          <p>Tələbələri idarə edin</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary btn-sm" onclick="Students.openCreate()">➕ Yeni Tələbə</button>
+        </div>
+      </div>
+      <div class="data-section">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ad Soyad</th>
+              <th>Email</th>
+              <th>Telefon</th>
+              <th>Yaş</th>
+              <th>Status</th>
+              <th>Tarix</th>
+              <th>Əməliyyat</th>
+            </tr>
+          </thead>
+          <tbody id="students-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======= LESSONS ======= -->
+    <div id="section-lessons" class="section-page">
+      <div class="main-header">
+        <div>
+          <h1>Dərslər</h1>
+          <p>Dərsləri idarə edin</p>
+        </div>
+        <div class="header-actions">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" placeholder="Dərs axtar..." id="lesson-search" oninput="Lessons.search(this.value)" />
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="Lessons.openCreate()">➕ Yeni Dərs</button>
+        </div>
+      </div>
+      <div class="data-section">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Başlıq</th>
+              <th>Kurs</th>
+              <th>Məzmun</th>
+              <th>Video</th>
+              <th>Status</th>
+              <th>Əməliyyat</th>
+            </tr>
+          </thead>
+          <tbody id="lessons-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======= ENROLLMENTS ======= -->
+    <div id="section-enrollments" class="section-page">
+      <div class="main-header">
+        <div>
+          <h1>Qeydiyyatlar</h1>
+          <p>Kurs qeydiyyatlarını idarə edin</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary btn-sm" onclick="Enrollments.openCreate()">➕ Kursa Qeydiyyat</button>
+        </div>
+      </div>
+      <div class="data-section">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Tələbə</th>
+              <th>Kurs</th>
+              <th>Qeydiyyat Tarixi</th>
+              <th>Status</th>
+              <th>Aktiv</th>
+              <th>Əməliyyat</th>
+            </tr>
+          </thead>
+          <tbody id="enrollments-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============ MODALS ============ -->
+
+<!-- Course Modal -->
+<div id="course-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="course-modal-title">Yeni Kurs</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="course-form" onsubmit="event.preventDefault(); Courses.save();">
+        <input type="hidden" id="course-id" />
+        <div class="form-group">
+          <label for="course-title">Kurs Adı *</label>
+          <input type="text" id="course-title" required minlength="3" maxlength="100" placeholder="Kurs adını daxil edin" />
+        </div>
+        <div class="form-group">
+          <label for="course-description">Təsvir</label>
+          <textarea id="course-description" rows="3" maxlength="2000" placeholder="Kursun təsviri"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="course-duration">Müddət (saat) *</label>
+            <input type="number" id="course-duration" required min="1" max="1000" placeholder="40" />
+          </div>
+          <div class="form-group">
+            <label for="course-price">Qiymət (₼) *</label>
+            <input type="number" id="course-price" required min="0" step="0.01" placeholder="99.99" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('course-modal')">Ləğv et</button>
+          <button type="submit" class="btn btn-primary">💾 Yadda saxla</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Teacher Modal -->
+<div id="teacher-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="teacher-modal-title">Yeni Müəllim</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="teacher-form" onsubmit="event.preventDefault(); Teachers.save();">
+        <input type="hidden" id="teacher-id" />
+        <div class="form-row">
+          <div class="form-group">
+            <label for="teacher-name">Ad *</label>
+            <input type="text" id="teacher-name" required minlength="2" maxlength="50" placeholder="Ad" />
+          </div>
+          <div class="form-group">
+            <label for="teacher-surname">Soyad *</label>
+            <input type="text" id="teacher-surname" required minlength="2" maxlength="50" placeholder="Soyad" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="teacher-email">Email *</label>
+          <input type="email" id="teacher-email" required maxlength="100" placeholder="email@example.com" />
+        </div>
+        <div class="form-group" id="teacher-password-group">
+          <label for="teacher-password">Şifrə *</label>
+          <input type="password" id="teacher-password" minlength="6" placeholder="Minimum 6 simvol" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="teacher-age">Yaş *</label>
+            <input type="number" id="teacher-age" required min="18" max="100" placeholder="30" />
+          </div>
+          <div class="form-group">
+            <label for="teacher-phone">Telefon</label>
+            <input type="text" id="teacher-phone" placeholder="994501234567" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="teacher-courseId">Kurs</label>
+          <select id="teacher-courseId">
+            <option value="">Kurs Seçin</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('teacher-modal')">Ləğv et</button>
+          <button type="submit" class="btn btn-primary">💾 Yadda saxla</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Student Modal -->
+<div id="student-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="student-modal-title">Yeni Tələbə</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="student-form" onsubmit="event.preventDefault(); Students.save();">
+        <input type="hidden" id="student-id" />
+        <div class="form-row">
+          <div class="form-group">
+            <label for="student-name">Ad *</label>
+            <input type="text" id="student-name" required minlength="2" maxlength="50" placeholder="Ad" />
+          </div>
+          <div class="form-group">
+            <label for="student-surname">Soyad *</label>
+            <input type="text" id="student-surname" required minlength="2" maxlength="50" placeholder="Soyad" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="student-email">Email *</label>
+          <input type="email" id="student-email" required maxlength="100" placeholder="email@example.com" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="student-age">Yaş *</label>
+            <input type="number" id="student-age" required min="18" max="100" placeholder="20" />
+          </div>
+          <div class="form-group">
+            <label for="student-phone">Telefon</label>
+            <input type="text" id="student-phone" placeholder="994501234567" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('student-modal')">Ləğv et</button>
+          <button type="submit" class="btn btn-primary">💾 Yadda saxla</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Lesson Modal -->
+<div id="lesson-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="lesson-modal-title">Yeni Dərs</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="lesson-form" onsubmit="event.preventDefault(); Lessons.save();">
+        <input type="hidden" id="lesson-id" />
+        <div class="form-group">
+          <label for="lesson-title">Dərs Başlığı *</label>
+          <input type="text" id="lesson-title" required minlength="3" maxlength="100" placeholder="Dərs adını daxil edin" />
+        </div>
+        <div class="form-group">
+          <label for="lesson-courseId">Kurs *</label>
+          <select id="lesson-courseId" required>
+            <option value="">Kurs Seçin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="lesson-content">Məzmun</label>
+          <textarea id="lesson-content" rows="4" maxlength="4000" placeholder="Dərsin məzmunu"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="lesson-videoURL">Video URL</label>
+          <input type="text" id="lesson-videoURL" placeholder="https://youtube.com/..." />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('lesson-modal')">Ləğv et</button>
+          <button type="submit" class="btn btn-primary">💾 Yadda saxla</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Enrollment Modal -->
+<div id="enrollment-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Kursa Qeydiyyat</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="enrollment-form" onsubmit="event.preventDefault(); Enrollments.saveEnrollment();">
+        <div class="form-group">
+          <label for="enrollment-courseName">Kurs Seçin *</label>
+          <select id="enrollment-courseName" required>
+            <option value="">Kurs Seçin</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('enrollment-modal')">Ləğv et</button>
+          <button type="submit" class="btn btn-success">📋 Qeydiyyatdan keç</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>

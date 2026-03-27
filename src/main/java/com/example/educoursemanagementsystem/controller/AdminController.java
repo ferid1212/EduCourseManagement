@@ -38,6 +38,7 @@ public class AdminController {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.TEACHER);
         user.setIsActive(true);
+        user.setPhone(request.getPhone());
         userRepository.save(user);
 
         // 2. Create Teacher Details (Teacher Table)
@@ -46,6 +47,7 @@ public class AdminController {
         teacherEntity.setSurname(request.getLastName());
         teacherEntity.setEmail(request.getEmail());
         teacherEntity.setAge(request.getAge());
+        teacherEntity.setPhone(request.getPhone());
         
         if (request.getCourseId() != null) {
             courseRepository.findById(request.getCourseId()).ifPresent(teacherEntity::setCourse);

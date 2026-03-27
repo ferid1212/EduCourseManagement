@@ -27,6 +27,7 @@ public class Teacher {
     @Column(nullable = false)
     String surname;
     Integer age;
+    String phone;
     @Column(name = "create_at")
     @CreationTimestamp
     LocalDateTime createAt;

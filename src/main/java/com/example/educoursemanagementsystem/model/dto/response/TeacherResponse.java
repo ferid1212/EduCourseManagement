@@ -30,6 +30,8 @@ public class TeacherResponse {
     @Min(value = 18, message = "Age must be at least 18")
     @Max(value = 100, message = "Age cannot exceed 100")
     Integer age;
+    @Pattern(regexp = "^994(50|51|55|99|70|77|10)\\d{7}$",message = "Please,Enter correct format for phone")
+    String phone;
     LocalDateTime create_at;
     LocalDateTime update_at;
     @NotNull(message = "Active status is required")

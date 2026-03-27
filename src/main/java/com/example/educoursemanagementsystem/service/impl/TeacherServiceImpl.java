@@ -48,6 +48,7 @@ public class TeacherServiceImpl implements TeacherService {
                 .name(request.getName())
                 .surname(request.getSurname())
                 .age(request.getAge())
+                .phone(request.getPhone())
                 .email(request.getEmail())
                 .course(course)
                 .build();
@@ -86,6 +87,7 @@ public class TeacherServiceImpl implements TeacherService {
         teacher.setName(request.getName());
         teacher.setSurname(request.getSurname());
         teacher.setAge(request.getAge());
+        teacher.setPhone(request.getPhone());
         teacher.setEmail(request.getEmail());
         Teacher updated=teacherRepository.save(teacher);
         teacherMapper.toTeacherResponse(updated);

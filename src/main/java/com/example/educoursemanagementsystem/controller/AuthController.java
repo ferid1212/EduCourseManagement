@@ -6,6 +6,8 @@ import com.example.educoursemanagementsystem.model.dto.response.AuthResponse;
 import com.example.educoursemanagementsystem.model.dto.request.RegisterRequest;
 import com.example.educoursemanagementsystem.model.entity.User;
 import com.example.educoursemanagementsystem.enums.Role;
+import com.example.educoursemanagementsystem.model.entity.Student;
+import com.example.educoursemanagementsystem.repository.StudentRepository;
 import com.example.educoursemanagementsystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     
     private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
@@ -36,7 +39,18 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.STUDENT);
         user.setIsActive(true);
+        user.setPhone(request.getPhone());
         userRepository.save(user);
+
+        // Also create a Student record
+        Student student = new Student();
+        student.setName(request.getFirstName());
+        student.setSurname(request.getLastName());
+        student.setEmail(request.getEmail());
+        student.setAge(request.getAge());
+        student.setPhone(request.getPhone());
+        student.setIsActive(true);
+        studentRepository.save(student);
 
         String jwtToken = jwtService.generateToken(user);
         return ResponseEntity.ok(AuthResponse.builder().token(jwtToken).build());

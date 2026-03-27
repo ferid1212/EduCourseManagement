@@ -10,4 +10,5 @@ public class RegisterRequest {
     private String password;
     private Long courseId;
     private Integer age;
+    private String phone;
 }

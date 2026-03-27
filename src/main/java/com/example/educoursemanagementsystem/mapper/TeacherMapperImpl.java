@@ -17,6 +17,7 @@ public class TeacherMapperImpl implements TeacherMapper{
                 .name(teacher.getName())
                 .surname(teacher.getSurname())
                 .age(teacher.getAge())
+                .phone(teacher.getPhone())
                 .email(teacher.getEmail())
                 .create_at(teacher.getCreateAt())
                 .update_at(teacher.getUpdateAt())

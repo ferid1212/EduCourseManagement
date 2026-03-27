@@ -39,11 +39,8 @@ public class CourseController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
-    public ResponseEntity<?> getAllCourse(){
+    public ResponseEntity<List<CourseResponseDTO>> getAllCourse(){
         List<CourseResponseDTO> response=courseService.getAll();
-        if(response.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course is not found");
-        }
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -54,11 +51,8 @@ public class CourseController {
     }
 
    @GetMapping("/search/{title}")
-   public ResponseEntity<?> searchByTitle(@PathVariable String title){
+   public ResponseEntity<List<CourseResponseDTO>> searchByTitle(@PathVariable String title){
         List<CourseResponseDTO> response=courseService.searchByTitle(title);
-        if (response.isEmpty()){
-           return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found");
-        }
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
