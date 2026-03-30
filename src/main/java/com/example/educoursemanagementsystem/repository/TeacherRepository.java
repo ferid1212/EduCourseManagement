@@ -10,7 +10,7 @@ public interface TeacherRepository extends JpaRepository<Teacher,Long> {
     List<Teacher> findByIsActive(Boolean isActive);
     Optional<Teacher> deleteTeacherById(Long id);
     Optional<Teacher> getTeachersByEmail(String email);
-    List<Teacher> getTeachersByName(String name);
+    List<Teacher> findByNameContainingIgnoreCaseOrSurnameContainingIgnoreCase(String name, String surname);
 
     boolean existsByEmail(String email);
 

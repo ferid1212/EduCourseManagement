@@ -27,7 +27,7 @@ public class LessonController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @GetMapping("/{id}")
     public ResponseEntity<LessonResponse> getLessonById(@PathVariable Long id){
         LessonResponse response=lessonService.getLessonById(id);
@@ -57,7 +57,7 @@ public class LessonController {
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @PutMapping("/{id}")
     public ResponseEntity<LessonResponse> updateLesson(@PathVariable Long id,@Valid @RequestBody LessonRequest request){
         LessonResponse response=lessonService.updateLesson(id,request);

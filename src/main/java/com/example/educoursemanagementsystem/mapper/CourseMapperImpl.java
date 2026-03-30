@@ -38,8 +38,8 @@ public class CourseMapperImpl implements CourseMapper {
                 .price(course.getPrice())
                 .duration(course.getDuration())
                 .create_at(course.getCreateAt())
-                .update_at(course.getUpdateAt())
-                .teachers(course.getTeachers().stream()
+                .isActive(course.getIsActive())
+                .teachers(course.getTeachers() != null ? course.getTeachers().stream()
                         .map(teacher -> {
                             return TeacherResponse.builder()
                                     .id(teacher.getId())
@@ -47,10 +47,12 @@ public class CourseMapperImpl implements CourseMapper {
                                     .surname(teacher.getSurname())
                                     .email(teacher.getEmail())
                                     .age(teacher.getAge())
+                                    .phone(teacher.getPhone())
+                                    .isActive(teacher.getIsActive())
                                     .create_at(teacher.getCreateAt())
                                     .update_at(teacher.getUpdateAt())
                                     .build();
-                        }).toList())
+                        }).toList() : java.util.Collections.emptyList())
                 .build();
     }
 

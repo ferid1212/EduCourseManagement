@@ -22,7 +22,7 @@ public class TeacherMapperImpl implements TeacherMapper{
                 .create_at(teacher.getCreateAt())
                 .update_at(teacher.getUpdateAt())
                 .isActive(teacher.getIsActive())
-                .courseName(teacher.getCourse().getTitle())
+                .courseName(teacher.getCourse() != null ? teacher.getCourse().getTitle() : null)
                 .build();
     }
 }

@@ -47,7 +47,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         if (enrollmentRepository.existsByStudentIdAndCourseIdAndIsActiveTrue(
                 request.getStudentId(), request.getCourseId())) {
             throw new AlreadyExistsException(
-                    "Student is already enrolled in this course");
+                    "Siz bu kursdan zatən qeydiyyatdan keçmisiz.");
         }
 
         Enrollment enrollment = Enrollment.builder()

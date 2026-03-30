@@ -29,6 +29,7 @@ public class CourseDetailsResponseDTO {
     @Positive(message = "Duration must be positive")
     Integer duration;
     List<TeacherResponse> teachers;
+    Boolean isActive;
     LocalDateTime create_at;
     LocalDateTime update_at;
 }

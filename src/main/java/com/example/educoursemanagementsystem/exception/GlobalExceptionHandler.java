@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<?> handleAlreadyExistsException(AlreadyExistsException ex){
         log.warn("AlreadyExistsException happened: {}",ex.getMessage());
-        return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)

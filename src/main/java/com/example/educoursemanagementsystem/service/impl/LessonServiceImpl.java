@@ -1,4 +1,8 @@
 package com.example.educoursemanagementsystem.service.impl;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import com.example.educoursemanagementsystem.model.entity.Teacher;
+import com.example.educoursemanagementsystem.repository.TeacherRepository;
 
 
 import com.example.educoursemanagementsystem.exception.ResourceNotFoundException;
@@ -25,16 +29,31 @@ public class LessonServiceImpl implements LessonService {
 
     private final LessonRepository lessonRepository;
     private final LessonMapper lessonMapper;
-    private  final CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
+    private final TeacherRepository teacherRepository;
 
     @Override
     public LessonResponse createLesson(LessonRequest request) {
-        if (request.getCourseId() == null) {
-            throw new RuntimeException("CourseId boş ola bilməz");
-        }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        boolean isTeacher = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_TEACHER"));
 
-        Course course = courseRepository.findById(request.getCourseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Kurs tapılmadı: " + request.getCourseId()));
+        Course course;
+        if (isTeacher) {
+            Teacher teacher = teacherRepository.getTeachersByEmail(email)
+                    .orElseThrow(() -> new ResourceNotFoundException("Müəllim tapılmadı: " + email));
+            course = teacher.getCourse();
+            if (course == null) {
+                throw new RuntimeException("Müəllim hələ bir kursa təyin edilməyib.");
+            }
+        } else {
+            if (request.getCourseId() == null) {
+                throw new RuntimeException("CourseId boş ola bilməz (Admin üçün məcburidir).");
+            }
+            course = courseRepository.findById(request.getCourseId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Kurs tapılmadı: " + request.getCourseId()));
+        }
 
         Lesson lesson = Lesson.builder()
                 .title(request.getTitle())
@@ -69,13 +88,11 @@ public class LessonServiceImpl implements LessonService {
     }
 
 
-    //GlobalException yaradan zaman buraya fikir ver.
     @Override
     public List<LessonResponse> searchLessonsByTitle(String title) {
-        return lessonRepository.findByTitleIgnoreCase(title).stream()
-                .map(lessonMapper :: toLessonResponse)
+        return lessonRepository.findByTitleContainingIgnoreCase(title).stream()
+                .map(lessonMapper::toLessonResponse)
                 .toList();
-
     }
 
     @Override

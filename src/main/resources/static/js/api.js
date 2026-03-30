@@ -3,7 +3,7 @@
 const API = {
   // Automatically detect base URL for local development
   // Prioritize 8081 as per user's application.yaml
-  BASE: window.location.port === '5500' ? 'http://localhost:8081' : '',
+  BASE: (window.location.port !== '8081') ? 'http://localhost:8081' : '',
 
   getToken() {
     return localStorage.getItem('edu_token');

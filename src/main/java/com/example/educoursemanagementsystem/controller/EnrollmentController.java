@@ -52,7 +52,7 @@ public class EnrollmentController {
         request.setStudentId(student.getId());
 
         if (request.getCourseName() != null && !request.getCourseName().trim().isEmpty()) {
-            Course course = courseRepository.findByTitleIgnoreCase(request.getCourseName())
+            Course course = courseRepository.findByTitle(request.getCourseName())
                     .orElseThrow(() -> new RuntimeException("Bu adda kurs tapılmadı: " + request.getCourseName()));
             request.setCourseId(course.getId());
         }

@@ -76,10 +76,9 @@ public class CourseServiceImpl implements CourseService {
                 .toList();
     }
 
-    //GlobalException yaradan zaman buraya fikir ver.
     @Override
     public List<CourseResponseDTO> searchByTitle(String title) {
-        return courseRepository.findByTitleIgnoreCase(title).stream()
+        return courseRepository.findByTitleContainingIgnoreCase(title).stream()
                 .map(mapper::toCourseResponseDTO)
                 .toList();
     }
@@ -91,8 +90,7 @@ public class CourseServiceImpl implements CourseService {
         course.setDescription(courseRequestDTO.getDescription());
         course.setDuration(courseRequestDTO.getDuration());
         course.setPrice(courseRequestDTO.getPrice());
-        Course updated=courseRepository.save(course);
-         mapper.toCourseResponseDTO(updated);
+        courseRepository.save(course);
     }
 
     @Override

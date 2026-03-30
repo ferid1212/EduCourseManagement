@@ -17,7 +17,6 @@ public class LessonRequest {
     String videoURL;
     @Size(max = 4000, message = "Description cannot exceed 4000 characters")
     String content;
-    @NotNull
     Long courseId;
 
 

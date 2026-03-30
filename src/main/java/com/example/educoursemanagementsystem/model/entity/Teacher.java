@@ -34,6 +34,7 @@ public class Teacher {
     @Column(name = "update_at")
     @UpdateTimestamp
     LocalDateTime updateAt;
+    @Builder.Default
     @Column(name = "is_active")
     Boolean isActive=true;
 

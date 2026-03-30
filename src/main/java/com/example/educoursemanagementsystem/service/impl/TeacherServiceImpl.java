@@ -89,6 +89,12 @@ public class TeacherServiceImpl implements TeacherService {
         teacher.setAge(request.getAge());
         teacher.setPhone(request.getPhone());
         teacher.setEmail(request.getEmail());
+
+        if (request.getCourseId() != null) {
+            courseRepository.findById(request.getCourseId())
+                    .ifPresent(teacher::setCourse);
+        }
+
         Teacher updated=teacherRepository.save(teacher);
         teacherMapper.toTeacherResponse(updated);
 
@@ -113,21 +119,11 @@ public class TeacherServiceImpl implements TeacherService {
         return teacherMapper.toTeacherResponse(teacher);
     }
 
-    //GlobalException yaradan zaman buraya fikir ver.
     @Override
     public List<TeacherResponse> searchTeachersByName(String name) {
-        List<TeacherResponse> teachers=teacherRepository.getTeachersByName(name).stream()
-                .map(teacherMapper :: toTeacherResponse)
+        return teacherRepository.findByNameContainingIgnoreCaseOrSurnameContainingIgnoreCase(name, name).stream()
+                .map(teacherMapper::toTeacherResponse)
                 .toList();
-
-        if (teachers.isEmpty()){
-            throw new ResourceNotFoundException("Name is not found");
-        }
-
-         return  teachers;
-
-
-
     }
 
 

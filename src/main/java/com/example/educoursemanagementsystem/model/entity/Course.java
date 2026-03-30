@@ -35,13 +35,14 @@ public class Course {
     @Column(name = "update_at")
     @UpdateTimestamp
     LocalDateTime updateAt;
+    @Builder.Default
     @Column(name = "is_active")
     Boolean isActive=true;
 
 
+    @Builder.Default
     @OneToMany(mappedBy = "course")
-
-    List<Teacher> teachers;
+    List<Teacher> teachers = new ArrayList<>();
 
     @OneToMany(mappedBy = "course")
 

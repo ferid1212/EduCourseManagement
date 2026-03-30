@@ -228,7 +228,7 @@ function formatDate(dateStr) {
 }
 
 function statusBadge(isActive) {
-  return isActive
+  return isActive === true
     ? '<span class="badge badge-active">Aktiv</span>'
     : '<span class="badge badge-inactive">Deaktiv</span>';
 }
@@ -254,16 +254,26 @@ function closeModal(id) {
 
 function showLoading(containerId) {
   const el = document.getElementById(containerId);
-  if (el) el.innerHTML = '<div class="loading-overlay"><span class="spinner"></span> Yüklənir...</div>';
+  if (!el) return;
+  const colCount = el.closest('table')?.querySelectorAll('thead th').length || 1;
+  el.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center; padding: 40px;">
+    <div class="loading-overlay" style="position:static; background:none; height:auto;">
+      <span class="spinner"></span> Yüklənir...
+    </div>
+  </td></tr>`;
 }
 
 function showEmpty(containerId, icon, title, desc) {
   const el = document.getElementById(containerId);
-  if (el) el.innerHTML = `<div class="empty-state">
-    <div class="empty-icon">${icon}</div>
-    <h3>${title}</h3>
-    <p>${desc}</p>
-  </div>`;
+  if (!el) return;
+  const colCount = el.closest('table')?.querySelectorAll('thead th').length || 1;
+  el.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center; padding: 40px;">
+    <div class="empty-state" style="margin:0;">
+      <div class="empty-icon">${icon}</div>
+      <h3>${title}</h3>
+      <p>${desc}</p>
+    </div>
+  </td></tr>`;
 }
 
 // === Dashboard ===
@@ -335,8 +345,10 @@ const Dashboard = {
 // === Courses ===
 const Courses = {
   data: [],
+  isSearching: false,
 
   async load() {
+    this.isSearching = false;
     showLoading('courses-table-body');
     try {
       let data;
@@ -349,20 +361,24 @@ const Courses = {
       this.render();
     } catch (err) {
       console.error('Course load error:', err);
-      showEmpty('courses-table-body', '📚', 'Kurs tapılmadı', err.message);
+      showEmpty('courses-table-body', '📚', 'Kurs yüklənmədi', err.message);
     }
   },
 
   render() {
     const tbody = document.getElementById('courses-table-body');
-    if (!this.data || !this.data.length) {
-      showEmpty('courses-table-body', '📚', 'Kurs yoxdur', 'Hələ heç bir kurs əlavə edilməyib.');
+    if (!Array.isArray(this.data) || !this.data.length) {
+      if (this.isSearching) {
+        showEmpty('courses-table-body', '🔍', 'Nəticə tapılmadı', 'Axtarışınıza uyğun heç bir kurs tapılmadı.');
+      } else {
+        showEmpty('courses-table-body', '📚', 'Kurs yoxdur', 'Hələ heç bir kurs əlavə edilməyib.');
+      }
       return;
     }
 
-    tbody.innerHTML = this.data.map(c => `<tr>
+    tbody.innerHTML = this.data.filter(Boolean).map(c => `<tr>
       <td><strong>${c.title}</strong></td>
-      <td>${c.description || '—'}</td>
+      <td>${c.description ? (c.description.substring(0, 60) + (c.description.length > 60 ? '...' : '')) : '—'}</td>
       <td>${c.duration} saat</td>
       <td>${c.price ? c.price.toFixed(2) + ' ₼' : '0.00 ₼'}</td>
       <td>${statusBadge(c.isActive)}</td>
@@ -383,14 +399,17 @@ const Courses = {
   async search(query) {
     if (this._searchTimeout) clearTimeout(this._searchTimeout);
     this._searchTimeout = setTimeout(async () => {
-      if (!query.trim()) return this.load();
+      const q = query.trim();
+      if (!q) return this.load();
+
+      this.isSearching = true;
       try {
-        const data = await API.courses.search(query);
+        const data = await API.courses.search(q);
         this.data = Array.isArray(data) ? data : [];
         this.render();
       } catch (err) {
         console.error('Course search error:', err);
-        showEmpty('courses-table-body', '🔍', 'Nəticə tapılmadı', err.message);
+        showEmpty('courses-table-body', '🔍', 'Xəta baş verdi', err.message);
       }
     }, 400);
   },
@@ -456,22 +475,28 @@ const Courses = {
 // === Teachers ===
 const Teachers = {
   data: [],
+  isSearching: false,
 
   async load() {
+    this.isSearching = false;
     showLoading('teachers-table-body');
     try {
       const data = await API.teachers.getAll();
       this.data = Array.isArray(data) ? data : [];
       this.render();
     } catch (err) {
-      showEmpty('teachers-table-body', '👨‍🏫', 'Müəllim tapılmadı', err.message);
+      showEmpty('teachers-table-body', '👨‍🏫', 'Müəllim yüklənmədi', err.message);
     }
   },
 
   render() {
     const tbody = document.getElementById('teachers-table-body');
     if (!this.data.length) {
-      showEmpty('teachers-table-body', '👨‍🏫', 'Müəllim yoxdur', 'Hələ heç bir müəllim əlavə edilməyib.');
+      if (this.isSearching) {
+        showEmpty('teachers-table-body', '🔍', 'Nəticə tapılmadı', 'Axtarışınıza uyğun müəllim tapılmadı.');
+      } else {
+        showEmpty('teachers-table-body', '👨‍🏫', 'Müəllim yoxdur', 'Hələ heç bir müəllim əlavə edilməyib.');
+      }
       return;
     }
 
@@ -493,14 +518,17 @@ const Teachers = {
   async search(query) {
     if (this._searchTimeout) clearTimeout(this._searchTimeout);
     this._searchTimeout = setTimeout(async () => {
-      if (!query.trim()) return this.load();
+      const q = query.trim();
+      if (!q) return this.load();
+
+      this.isSearching = true;
       try {
-        const data = await API.teachers.searchByName(query);
+        const data = await API.teachers.searchByName(q);
         this.data = Array.isArray(data) ? data : [];
         this.render();
       } catch (err) {
         console.error('Teacher search error:', err);
-        showEmpty('teachers-table-body', '🔍', 'Nəticə tapılmadı', err.message);
+        showEmpty('teachers-table-body', '🔍', 'Xəta baş verdi', err.message);
       }
     }, 400);
   },
@@ -693,8 +721,10 @@ const Students = {
 // === Lessons ===
 const Lessons = {
   data: [],
+  isSearching: false,
 
   async load() {
+    this.isSearching = false;
     showLoading('lessons-table-body');
     try {
       let data;
@@ -706,14 +736,18 @@ const Lessons = {
       this.data = Array.isArray(data) ? data : [];
       this.render();
     } catch (err) {
-      showEmpty('lessons-table-body', '📖', 'Dərs tapılmadı', err.message);
+      showEmpty('lessons-table-body', '📖', 'Dərs yüklənmədi', err.message);
     }
   },
 
   render() {
     const tbody = document.getElementById('lessons-table-body');
     if (!this.data.length) {
-      showEmpty('lessons-table-body', '📖', 'Dərs yoxdur', 'Hələ heç bir dərs əlavə edilməyib.');
+      if (this.isSearching) {
+        showEmpty('lessons-table-body', '🔍', 'Nəticə tapılmadı', 'Axtarışınıza uyğun heç bir dərs tapılmadı.');
+      } else {
+        showEmpty('lessons-table-body', '📖', 'Dərs yoxdur', 'Hələ heç bir dərs əlavə edilməyib.');
+      }
       return;
     }
 
@@ -734,15 +768,23 @@ const Lessons = {
     </tr>`).join('');
   },
 
+  _searchTimeout: null,
   async search(query) {
-    if (!query.trim()) return this.load();
-    try {
-      const data = await API.lessons.searchByTitle(query);
-      this.data = Array.isArray(data) ? data : [];
-      this.render();
-    } catch (err) {
-      showEmpty('lessons-table-body', '🔍', 'Nəticə tapılmadı', err.message);
-    }
+    if (this._searchTimeout) clearTimeout(this._searchTimeout);
+    this._searchTimeout = setTimeout(async () => {
+      const q = query.trim();
+      if (!q) return this.load();
+
+      this.isSearching = true;
+      try {
+        const data = await API.lessons.searchByTitle(q);
+        this.data = Array.isArray(data) ? data : [];
+        this.render();
+      } catch (err) {
+        console.error('Lesson search error:', err);
+        showEmpty('lessons-table-body', '🔍', 'Xəta baş verdi', err.message);
+      }
+    }, 400);
   },
 
   async openCreate() {
@@ -753,10 +795,13 @@ const Lessons = {
     // Load courses for select
     try {
       let courses;
+      const selGroup = document.getElementById('lesson-courseId').closest('.form-group');
       if (App.role === 'ADMIN') {
         courses = await API.courses.getAll();
+        selGroup.style.display = 'block';
       } else {
         courses = await API.courses.getActive();
+        selGroup.style.display = 'none';
       }
       const sel = document.getElementById('lesson-courseId');
       sel.innerHTML = '<option value="">Kurs Seçin</option>' +
@@ -778,10 +823,13 @@ const Lessons = {
       // Load courses
       try {
         let courses;
+        const selGroup = document.getElementById('lesson-courseId').closest('.form-group');
         if (App.role === 'ADMIN') {
           courses = await API.courses.getAll();
+          selGroup.style.display = 'block';
         } else {
           courses = await API.courses.getActive();
+          selGroup.style.display = 'none';
         }
         const sel = document.getElementById('lesson-courseId');
         sel.innerHTML = '<option value="">Kurs Seçin</option>' +
@@ -800,8 +848,13 @@ const Lessons = {
       title: document.getElementById('lesson-title').value,
       content: document.getElementById('lesson-content').value || null,
       videoURL: document.getElementById('lesson-videoURL').value || null,
-      courseId: parseInt(document.getElementById('lesson-courseId').value),
+      courseId: App.role === 'ADMIN' ? parseInt(document.getElementById('lesson-courseId').value) : null,
     };
+
+    if (App.role === 'ADMIN' && !data.courseId) {
+      Toast.error('Zəhmət olmasa kurs seçin.');
+      return;
+    }
 
     try {
       if (id) {
@@ -885,7 +938,7 @@ const Enrollments = {
       } else {
         sel.innerHTML = '<option value="">Aktiv kurs tapılmadı</option>';
       }
-    } catch (err) { 
+    } catch (err) {
       console.error('Enrollment modal load error:', err);
       sel.innerHTML = '<option value="">Kursları yükləmək mümkün olmadı</option>';
     }

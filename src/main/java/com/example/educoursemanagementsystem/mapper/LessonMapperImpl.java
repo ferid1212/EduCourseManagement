@@ -20,7 +20,7 @@ public class LessonMapperImpl implements LessonMapper{
                 .createAt(lesson.getCreateAt())
                 .updateAt(lesson.getUpdateAt())
                 .isActive(lesson.getIsActive())
-                .courseName(lesson.getCourse().getTitle())
+                .courseName(lesson.getCourse() != null ? lesson.getCourse().getTitle() : null)
                 .build();
     }
 }
