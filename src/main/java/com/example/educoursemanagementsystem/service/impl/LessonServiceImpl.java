@@ -72,28 +72,51 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public LessonResponse getLessonById(Long id) {
-        Lesson lesson=lessonRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Lesson not found"));
+        Lesson lesson = lessonRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
+        
+        checkTeacherAccess(lesson);
         return lessonMapper.toLessonResponse(lesson);
     }
 
     @Override
     public List<LessonResponse> getAllLessons() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (hasRole(auth, "ROLE_TEACHER")) {
+            Course course = getTeacherCourseOrThrow(auth.getName());
+            return lessonRepository.findByCourseId(course.getId()).stream()
+                    .map(lessonMapper::toLessonResponse)
+                    .toList();
+        }
         return lessonRepository.findAll().stream()
-                .map(lessonMapper :: toLessonResponse)
+                .map(lessonMapper::toLessonResponse)
                 .toList();
-
     }
 
     @Override
     public List<LessonResponse> getAllActiveLessons() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (hasRole(auth, "ROLE_TEACHER")) {
+            Course course = getTeacherCourseOrThrow(auth.getName());
+            return lessonRepository.findByCourseIdAndIsActiveTrue(course.getId()).stream()
+                    .map(lessonMapper::toLessonResponse)
+                    .toList();
+        }
         return lessonRepository.findByIsActive(true).stream()
-                .map(lessonMapper :: toLessonResponse)
+                .map(lessonMapper::toLessonResponse)
                 .toList();
     }
 
-
     @Override
     public List<LessonResponse> searchLessonsByTitle(String title) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (hasRole(auth, "ROLE_TEACHER")) {
+            Course course = getTeacherCourseOrThrow(auth.getName());
+            return lessonRepository.findByTitleContainingIgnoreCase(title).stream()
+                    .filter(l -> l.getCourse().getId().equals(course.getId()))
+                    .map(lessonMapper::toLessonResponse)
+                    .toList();
+        }
         return lessonRepository.findByTitleContainingIgnoreCase(title).stream()
                 .map(lessonMapper::toLessonResponse)
                 .toList();
@@ -101,36 +124,75 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public LessonResponse updateLesson(Long id, LessonRequest request) {
-        Lesson lesson=lessonRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Lesson not found"));
+        Lesson lesson = lessonRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
+        
+        checkTeacherAccess(lesson);
+        
         lesson.setTitle(request.getTitle());
         lesson.setVideoURL(request.getVideoURL());
         lesson.setContent(request.getContent());
 
-        Lesson updated=lessonRepository.save(lesson);
+        Lesson updated = lessonRepository.save(lesson);
         return lessonMapper.toLessonResponse(updated);
     }
 
     @Override
     public LessonResponse updateVideoUrl(Long lessonId, String videoUrl) {
-        Lesson lesson=lessonRepository.findById(lessonId).orElseThrow(()->new ResourceNotFoundException("Lesson not found"));
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
+        
+        checkTeacherAccess(lesson);
+        
         lesson.setVideoURL(videoUrl);
-        Lesson updated= lessonRepository.save(lesson);
+        Lesson updated = lessonRepository.save(lesson);
         return lessonMapper.toLessonResponse(updated);
-
     }
 
     @Override
     public void softDeleteLesson(Long id) {
-        Lesson lesson=lessonRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Lesson not found"));
+        Lesson lesson = lessonRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
+        
+        checkTeacherAccess(lesson);
+        
         lesson.setIsActive(false);
         lessonRepository.save(lesson);
     }
 
     @Override
     public void hardDeleteLesson(Long id) {
-        Lesson lesson=lessonRepository.deleteLessonById(id).orElseThrow(()->new ResourceNotFoundException("Lesson not found"));
+        Lesson lesson = lessonRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
+        
+        checkTeacherAccess(lesson);
+        
+        lessonRepository.delete(lesson);
+    }
 
+    private void checkTeacherAccess(Lesson lesson) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (hasRole(auth, "ROLE_TEACHER")) {
+            Course course = getTeacherCourseOrThrow(auth.getName());
+            if (!lesson.getCourse().getId().equals(course.getId())) {
+                throw new BadRequestException("Bu dərs üzərində əməliyyat aparmaq üçün icazəniz yoxdur.");
+            }
+        }
+    }
 
+    private Course getTeacherCourseOrThrow(String email) {
+        Teacher teacher = teacherRepository.getTeachersByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Müəllim tapılmadı: " + email));
+        Course course = teacher.getCourse();
+        if (course == null) {
+            throw new BadRequestException("Müəllim hələ bir kursa təyin edilməyib.");
+        }
+        return course;
+    }
+
+    private boolean hasRole(Authentication auth, String role) {
+        return auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals(role));
     }
     @Override
     public List<LessonResponse> getLessonsByCourseForStudent(Long courseId) {
