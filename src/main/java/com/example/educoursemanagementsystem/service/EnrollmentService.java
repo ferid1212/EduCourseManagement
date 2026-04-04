@@ -34,6 +34,8 @@ public interface EnrollmentService {
 
     void hardDeleteEnrollment(Long id);
 
+    EnrollmentResponse payEnrollment(Long enrollmentId);
+
     long getActiveStudentCountInCourse(Long courseId);
 
     boolean isStudentEnrolledInCourse(Long studentId, Long courseId);

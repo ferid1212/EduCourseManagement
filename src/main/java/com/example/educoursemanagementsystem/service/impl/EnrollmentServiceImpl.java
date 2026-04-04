@@ -63,7 +63,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                         "Siz bu kursdan zatən qeydiyyatdan keçmisiz.");
             }
             existing.setIsActive(true);
-            existing.setStatus(EnrollmentStatus.ACTIVE);
+            existing.setStatus(EnrollmentStatus.PENDING);
+            existing.setIsPaid(false);
             existing.setEnrollmentDate(LocalDate.now());
             Enrollment saved = enrollmentRepository.save(existing);
             log.info("Enrollment reactivated with id: {}", saved.getId());
@@ -73,7 +74,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         Enrollment enrollment = Enrollment.builder()
                 .student(student)
                 .course(course)
-                .status(EnrollmentStatus.ACTIVE)
+                .status(EnrollmentStatus.PENDING)
+                .isPaid(false)
                 .enrollmentDate(LocalDate.now())
                 .build();
 
@@ -188,6 +190,20 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         enrollmentRepository.deleteById(id);
 
+    }
+
+    @Override
+    @Transactional
+    public EnrollmentResponse payEnrollment(Long enrollmentId) {
+        log.info("Processing payment for enrollment: {}", enrollmentId);
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found: " + enrollmentId));
+        
+        enrollment.setIsPaid(true);
+        enrollment.setStatus(EnrollmentStatus.ACTIVE);
+        
+        Enrollment saved = enrollmentRepository.save(enrollment);
+        return enrollmentMapper.toEnrollmentResponse(saved);
     }
 
     @Override

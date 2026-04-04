@@ -325,6 +325,9 @@ const API = {
     async cancel(id) {
       return API.request(`/enrollments/${id}`, { method: 'DELETE' });
     },
+    async pay(id) {
+      return API.request(`/enrollments/${id}/pay`, { method: 'PUT' });
+    },
     async hardDelete(id) {
       return API.request(`/enrollments/hard/${id}`, { method: 'DELETE' });
     },

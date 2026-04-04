@@ -151,6 +151,20 @@ public class EnrollmentController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @PutMapping("/{id}/pay")
+    public ResponseEntity<EnrollmentResponse> payEnrollment(@PathVariable Long id) {
+        // Students can only pay for their own enrollments
+        if (isStudentOnlyUser()) {
+            Long studentId = currentUserStudentIdOrThrow();
+            EnrollmentResponse enrollment = enrollmentService.getEnrollmentById(id);
+            if (!Objects.equals(enrollment.getStudentId(), studentId)) {
+                throw new AccessDeniedException("Yalnız öz qeydiyyatınız üçün ödəniş edə bilərsiniz.");
+            }
+        }
+        EnrollmentResponse response = enrollmentService.payEnrollment(id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> softDeleteEnrollment(@PathVariable Long id) {
         Long restrictToStudent = isStudentOnlyUser() ? currentUserStudentIdOrThrow() : null;

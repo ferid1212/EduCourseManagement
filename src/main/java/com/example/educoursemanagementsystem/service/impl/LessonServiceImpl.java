@@ -1,18 +1,16 @@
 package com.example.educoursemanagementsystem.service.impl;
+import com.example.educoursemanagementsystem.enums.EnrollmentStatus;
+import com.example.educoursemanagementsystem.model.entity.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
-import com.example.educoursemanagementsystem.model.entity.Teacher;
 import com.example.educoursemanagementsystem.repository.TeacherRepository;
 import com.example.educoursemanagementsystem.repository.StudentRepository;
 import com.example.educoursemanagementsystem.repository.EnrollmentRepository;
-import com.example.educoursemanagementsystem.model.entity.Student;
 
 
 import com.example.educoursemanagementsystem.exception.ResourceNotFoundException;
 import com.example.educoursemanagementsystem.model.dto.request.LessonRequest;
 import com.example.educoursemanagementsystem.model.dto.response.LessonResponse;
-import com.example.educoursemanagementsystem.model.entity.Course;
-import com.example.educoursemanagementsystem.model.entity.Lesson;
 import com.example.educoursemanagementsystem.mapper.LessonMapper;
 import com.example.educoursemanagementsystem.repository.CourseRepository;
 import com.example.educoursemanagementsystem.repository.LessonRepository;
@@ -145,9 +143,11 @@ public class LessonServiceImpl implements LessonService {
             throw new RuntimeException("Student account is not active.");
         }
 
-        boolean isEnrolled = enrollmentRepository.existsByStudentIdAndCourseIdAndIsActiveTrue(student.getId(), courseId);
-        if (!isEnrolled) {
-            throw new RuntimeException("You are not enrolled in this course.");
+        Enrollment enrollment = enrollmentRepository.findByStudentIdAndCourseId(student.getId(), courseId)
+                .orElseThrow(() -> new RuntimeException("You are not enrolled in this course."));
+
+        if (!Boolean.TRUE.equals(enrollment.getIsActive()) || enrollment.getStatus() != EnrollmentStatus.ACTIVE) {
+            throw new RuntimeException("Your enrollment is not active or awaiting payment.");
         }
 
         return lessonRepository.findByCourseIdAndIsActiveTrue(courseId).stream()

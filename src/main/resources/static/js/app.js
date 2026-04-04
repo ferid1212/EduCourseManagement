@@ -942,7 +942,8 @@ const Enrollments = {
           <button class="btn btn-sm btn-danger" onclick="Enrollments.cancel(${e.id})" title="Ləğv et">❌</button>
         ` : ''}
         ${App.role === 'STUDENT' && e.status !== 'CANCELLED' ? `
-          <button class="btn btn-sm btn-primary" onclick="Lessons.viewByCourse(${e.courseId}, '${e.courseTitle?.replace(/'/g, "\\'")}')" title="Dərslərə Bax">📖 Dərslər</button>
+          ${e.status === 'PENDING' ? `<button class="btn btn-sm btn-success" onclick="Enrollments.pay(${e.id})" title="Ödəniş et">💳 Ödə</button>` : ''}
+          ${e.status === 'ACTIVE' ? `<button class="btn btn-sm btn-primary" onclick="Lessons.viewByCourse(${e.courseId}, '${e.courseTitle?.replace(/'/g, "\\'")}')" title="Dərslərə Bax">📖 Dərslər</button>` : ''}
           <button class="btn btn-sm btn-danger" onclick="Enrollments.cancel(${e.id})" title="Ləğv et">❌ Ləğv</button>
         ` : ''}
       </td>
@@ -1009,6 +1010,17 @@ const Enrollments = {
     try {
       await API.enrollments.cancel(id);
       Toast.success('Qeydiyyat ləğv edildi!');
+      this.load();
+    } catch (err) {
+      Toast.error(err.message);
+    }
+  },
+
+  async pay(id) {
+    if (!confirm('Kurs ödənişini simulyasiya etmək istəyirsiniz?')) return;
+    try {
+      await API.enrollments.pay(id);
+      Toast.success('Ödəniş uğurla tamamlandı! İndi dərslərə baxa bilərsiniz.');
       this.load();
     } catch (err) {
       Toast.error(err.message);

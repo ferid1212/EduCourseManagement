@@ -25,6 +25,7 @@ public class EnrollmentMapperImpl implements EnrollmentMapper {
                 .createAt(enrollment.getCreateAt())
                 .updateAt(enrollment.getUpdateAt())
                 .isActive(enrollment.getIsActive())
+                .isPaid(enrollment.getIsPaid())
                 .build();
     }
 }

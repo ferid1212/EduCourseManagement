@@ -58,6 +58,10 @@ public class Enrollment {
     @Builder.Default
     EnrollmentStatus status = EnrollmentStatus.ACTIVE;
 
+    @Column(name = "is_paid")
+    @Builder.Default
+    Boolean isPaid = false;
+
     @PrePersist
     public void prePersist() {
         if (isActive == null) {
@@ -65,6 +69,9 @@ public class Enrollment {
         }
         if (status == null) {
             status = EnrollmentStatus.ACTIVE;
+        }
+        if (isPaid == null) {
+            isPaid = false;
         }
         if (enrollmentDate == null) {
             enrollmentDate = LocalDate.now();
