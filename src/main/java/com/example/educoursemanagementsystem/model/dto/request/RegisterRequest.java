@@ -11,7 +11,7 @@ public class RegisterRequest {
     private String lastName;
     @Email
     private String email;
-    @Pattern(regexp = "\\d{6,}", message = "Minimum 6 rəqəm olmalıdır")
+    @Size(min = 6, message = "Password ən azı 6 simvol olmalıdır")
     private String password;
     private Long courseId;
     @NotNull(message = "Age is required")
