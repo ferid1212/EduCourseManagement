@@ -388,6 +388,9 @@ const Courses = {
           <button class="btn btn-sm btn-secondary" onclick="Courses.edit(${c.id})" title="Redaktə">✏️</button>
           <button class="btn btn-sm btn-danger" onclick="Courses.remove(${c.id})" title="Sil">🗑️</button>
         ` : ''}
+        ${App.role === 'ADMIN' || App.role === 'TEACHER' ? `
+          <button class="btn btn-sm btn-info" onclick="Courses.viewStudents(${c.id}, '${c.title?.replace(/'/g, "\\'")}')" title="Tələbələr">👥 Tələbələr</button>
+        ` : ''}
         ${App.role === 'STUDENT' ? `
           <button class="btn btn-sm btn-success" onclick="Enrollments.enrollByCourseId(${c.id})">📋 Qeydiyyat</button>
         ` : ''}
@@ -468,6 +471,32 @@ const Courses = {
       this.load();
     } catch (err) {
       Toast.error(err.message);
+    }
+  },
+
+  async viewStudents(courseId, courseTitle) {
+    const titleEl = document.getElementById('course-students-title');
+    if (titleEl) titleEl.textContent = `${courseTitle} — Tələbələr`;
+    showLoading('course-students-body');
+    openModal('course-students-modal');
+
+    try {
+      const data = await API.enrollments.getByCourse(courseId);
+      const tbody = document.getElementById('course-students-body');
+      
+      if (!Array.isArray(data) || !data.length) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 20px;">Bu kurs üçün hələ heç bir tələbə qeydiyyatdan keçməyib.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.map(e => `<tr>
+        <td><strong>${e.studentName} ${e.studentSurname}</strong><br><small>${e.studentEmail || ''}</small></td>
+        <td>${enrollmentBadge(e.status)}</td>
+        <td>${formatDate(e.enrollmentDate)}</td>
+      </tr>`).join('');
+    } catch (err) {
+      Toast.error(err.message);
+      closeModal('course-students-modal');
     }
   },
 };

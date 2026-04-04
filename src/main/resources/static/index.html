@@ -493,6 +493,33 @@
   </div>
 </div>
 
+<!-- View Students Modal (for Admin/Teacher) -->
+<div id="course-students-modal" class="modal-overlay">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 id="course-students-title">Kurs Tələbələri</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="data-section" style="max-height: 400px; overflow-y: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Tələbə</th>
+              <th>Status</th>
+              <th>Tarix</th>
+            </tr>
+          </thead>
+          <tbody id="course-students-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('course-students-modal')">Bağla</button>
+    </div>
+  </div>
+</div>
+
 <script src="/js/api.js"></script>
 <script src="/js/app.js"></script>
 </body>
