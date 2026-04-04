@@ -11,6 +11,9 @@ import com.example.educoursemanagementsystem.repository.CourseRepository;
 import com.example.educoursemanagementsystem.model.entity.Course;
 import com.example.educoursemanagementsystem.model.entity.User;
 import com.example.educoursemanagementsystem.model.entity.Student;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -19,6 +22,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -68,11 +75,25 @@ public class EnrollmentController {
     @GetMapping("/{id}")
     public ResponseEntity<EnrollmentResponse> getEnrollmentById(@PathVariable Long id) {
         EnrollmentResponse response = enrollmentService.getEnrollmentById(id);
+        if (isStudentOnlyUser()) {
+            Long sid = currentUserStudentIdOrThrow();
+            if (!Objects.equals(response.getStudentId(), sid)) {
+                throw new AccessDeniedException("Bu qeydiyyata baxmaq üçün icazəniz yoxdur.");
+            }
+        }
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping
     public ResponseEntity<List<EnrollmentResponse>> getAllEnrollments() {
+        if (isStudentOnlyUser()) {
+            Optional<Long> sid = currentUserStudentId();
+            if (sid.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(List.of());
+            }
+            List<EnrollmentResponse> responses = enrollmentService.getEnrollmentsByStudent(sid.get());
+            return ResponseEntity.status(HttpStatus.OK).body(responses);
+        }
         List<EnrollmentResponse> responses = enrollmentService.getAllEnrollments();
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
@@ -80,6 +101,12 @@ public class EnrollmentController {
     @GetMapping("/student/{studentId}")
     public ResponseEntity<List<EnrollmentResponse>> getEnrollmentsByStudent(
             @PathVariable Long studentId) {
+        if (isStudentOnlyUser()) {
+            Long sid = currentUserStudentIdOrThrow();
+            if (!studentId.equals(sid)) {
+                throw new AccessDeniedException("Yalnız öz qeydiyyatlarınızı görə bilərsiniz.");
+            }
+        }
         List<EnrollmentResponse> responses = enrollmentService.getEnrollmentsByStudent(studentId);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
@@ -87,6 +114,9 @@ public class EnrollmentController {
     @GetMapping("/course/{courseId}")
     public ResponseEntity<List<EnrollmentResponse>> getEnrollmentsByCourse(
             @PathVariable Long courseId) {
+        if (isStudentOnlyUser()) {
+            throw new AccessDeniedException("Bu siyahıya baxmaq üçün icazəniz yoxdur.");
+        }
         List<EnrollmentResponse> responses = enrollmentService.getEnrollmentsByCourse(courseId);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
@@ -94,6 +124,9 @@ public class EnrollmentController {
     @GetMapping("/status/{status}")
     public ResponseEntity<List<EnrollmentResponse>> getEnrollmentsByStatus(
             @PathVariable EnrollmentStatus status) {
+        if (isStudentOnlyUser()) {
+            throw new AccessDeniedException("Bu siyahıya baxmaq üçün icazəniz yoxdur.");
+        }
         List<EnrollmentResponse> responses = enrollmentService.getEnrollmentsByStatus(status);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
@@ -102,30 +135,43 @@ public class EnrollmentController {
     public ResponseEntity<EnrollmentResponse> updateStatus(
             @PathVariable Long id,
             @RequestParam EnrollmentStatus status) {
+        if (isStudentOnlyUser()) {
+            throw new AccessDeniedException("Status dəyişdirmək üçün icazəniz yoxdur.");
+        }
         EnrollmentResponse response = enrollmentService.updateStatus(id, status);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PutMapping("/{id}/complete")
     public ResponseEntity<EnrollmentResponse> completeEnrollment(@PathVariable Long id) {
+        if (isStudentOnlyUser()) {
+            throw new AccessDeniedException("Qeydiyyatı tamamlamaq üçün icazəniz yoxdur.");
+        }
         EnrollmentResponse response = enrollmentService.completeEnrollment(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> softDeleteEnrollment(@PathVariable Long id) {
-        enrollmentService.softDeleteEnrollment(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Enrollment cancelled successfully");
+    public ResponseEntity<Void> softDeleteEnrollment(@PathVariable Long id) {
+        Long restrictToStudent = isStudentOnlyUser() ? currentUserStudentIdOrThrow() : null;
+        enrollmentService.cancelEnrollment(id, restrictToStudent);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/hard/{id}")
     public ResponseEntity<String> hardDeleteEnrollment(@PathVariable Long id) {
+        if (isStudentOnlyUser()) {
+            throw new AccessDeniedException("Bu əməliyyat üçün icazəniz yoxdur.");
+        }
         enrollmentService.hardDeleteEnrollment(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/course/{courseId}/count")
     public ResponseEntity<Long> getActiveStudentCount(@PathVariable Long courseId) {
+        if (isStudentOnlyUser()) {
+            throw new AccessDeniedException("Bu məlumata baxmaq üçün icazəniz yoxdur.");
+        }
         long count = enrollmentService.getActiveStudentCountInCourse(courseId);
         return ResponseEntity.status(HttpStatus.OK).body(count);
     }
@@ -134,7 +180,36 @@ public class EnrollmentController {
     public ResponseEntity<Boolean> checkEnrollment(
             @RequestParam Long studentId,
             @RequestParam Long courseId) {
+        if (isStudentOnlyUser()) {
+            Long sid = currentUserStudentIdOrThrow();
+            if (!studentId.equals(sid)) {
+                throw new AccessDeniedException("Yalnız öz qeydiyyatınızı yoxlaya bilərsiniz.");
+            }
+        }
         boolean enrolled = enrollmentService.isStudentEnrolledInCourse(studentId, courseId);
         return ResponseEntity.status(HttpStatus.OK).body(enrolled);
+    }
+
+    private boolean isStudentOnlyUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            return false;
+        }
+        Set<String> roles = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+        return roles.contains("ROLE_STUDENT")
+                && !roles.contains("ROLE_ADMIN")
+                && !roles.contains("ROLE_TEACHER");
+    }
+
+    private Optional<Long> currentUserStudentId() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return studentRepository.findByEmail(email).map(Student::getId);
+    }
+
+    private Long currentUserStudentIdOrThrow() {
+        return currentUserStudentId()
+                .orElseThrow(() -> new AccessDeniedException("Tələbə profili tapılmadı."));
     }
 }

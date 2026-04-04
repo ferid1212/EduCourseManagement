@@ -38,7 +38,7 @@ public class Student {
     @Column(name = "is_active")
     Boolean isActive=true;
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @Builder.Default
     List<Enrollment> enrollments = new ArrayList<>();
 

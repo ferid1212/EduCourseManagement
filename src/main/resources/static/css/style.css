@@ -298,8 +298,7 @@ body::before {
 #app-screen { display: none; }
 
 #app-screen.active {
-  display: grid;
-  grid-template-columns: 260px 1fr;
+  display: block;
   min-height: 100vh;
 }
 

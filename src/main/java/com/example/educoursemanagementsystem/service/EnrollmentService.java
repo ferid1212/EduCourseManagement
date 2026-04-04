@@ -24,6 +24,12 @@ public interface EnrollmentService {
 
     EnrollmentResponse completeEnrollment(Long id);
 
+    /**
+     * Soft-cancel enrollment. When {@code studentIdIfRestricted} is non-null (plain student user),
+     * the enrollment must belong to that student.
+     */
+    void cancelEnrollment(Long enrollmentId, Long studentIdIfRestricted);
+
     void softDeleteEnrollment(Long id);
 
     void hardDeleteEnrollment(Long id);

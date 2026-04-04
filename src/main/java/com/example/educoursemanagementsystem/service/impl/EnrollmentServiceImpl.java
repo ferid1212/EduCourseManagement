@@ -21,6 +21,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.security.access.AccessDeniedException;
 
 @Service
 @AllArgsConstructor
@@ -48,6 +52,22 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 request.getStudentId(), request.getCourseId())) {
             throw new AlreadyExistsException(
                     "Siz bu kursdan zatən qeydiyyatdan keçmisiz.");
+        }
+
+        Optional<Enrollment> previous = enrollmentRepository.findByStudentIdAndCourseId(
+                request.getStudentId(), request.getCourseId());
+        if (previous.isPresent()) {
+            Enrollment existing = previous.get();
+            if (Boolean.TRUE.equals(existing.getIsActive())) {
+                throw new AlreadyExistsException(
+                        "Siz bu kursdan zatən qeydiyyatdan keçmisiz.");
+            }
+            existing.setIsActive(true);
+            existing.setStatus(EnrollmentStatus.ACTIVE);
+            existing.setEnrollmentDate(LocalDate.now());
+            Enrollment saved = enrollmentRepository.save(existing);
+            log.info("Enrollment reactivated with id: {}", saved.getId());
+            return enrollmentMapper.toEnrollmentResponse(saved);
         }
 
         Enrollment enrollment = Enrollment.builder()
@@ -135,17 +155,26 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     @Transactional
-    public void softDeleteEnrollment(Long id) {
-        log.info("Soft deleting enrollment: {}", id);
-
-        Enrollment enrollment = enrollmentRepository.findById(id)
+    public void cancelEnrollment(Long enrollmentId, Long studentIdIfRestricted) {
+        log.info("Cancelling enrollment: {}", enrollmentId);
+        Enrollment enrollment = enrollmentRepository.findByIdWithDetails(enrollmentId)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Enrollment not found with id: " + id));
-
+                        "Enrollment not found with id: " + enrollmentId));
+        if (studentIdIfRestricted != null) {
+            Long ownerId = enrollment.getStudent() != null ? enrollment.getStudent().getId() : null;
+            if (!Objects.equals(ownerId, studentIdIfRestricted)) {
+                throw new AccessDeniedException("Bu qeydiyyatı ləğv etmək üçün icazəniz yoxdur.");
+            }
+        }
+        // DB-də enrollments_status_check CANCELLED qəbul etməyə bilər; ləğv üçün kifayətdir ki, siyahılarda is_active=false süzülür.
         enrollment.setIsActive(false);
-        enrollment.setStatus(EnrollmentStatus.CANCELLED);
         enrollmentRepository.save(enrollment);
+    }
 
+    @Override
+    @Transactional
+    public void softDeleteEnrollment(Long id) {
+        cancelEnrollment(id, null);
     }
 
     @Override

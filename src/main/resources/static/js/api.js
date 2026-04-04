@@ -52,10 +52,14 @@ const API = {
 
   async request(url, options = {}) {
     const token = this.getToken();
-    const headers = {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    };
+    const headers = { ...options.headers };
+    const hasJsonBody =
+      options.body != null &&
+      options.body !== '' &&
+      !(options.body instanceof FormData);
+    if (hasJsonBody && !headers['Content-Type']) {
+      headers['Content-Type'] = 'application/json';
+    }
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
@@ -67,16 +71,6 @@ const API = {
         headers,
       });
 
-      if (response.status === 401 || response.status === 403) {
-        if (response.status === 401) {
-          console.warn('Unauthorized request. Clearing token.');
-          this.removeToken();
-          window.location.reload();
-          throw new Error('Oturum müddəti bitib. Yenidən daxil olun.');
-        }
-        throw new Error('Bu əməliyyat üçün icazəniz yoxdur.');
-      }
-
       const text = await response.text();
       let data;
       try {
@@ -85,8 +79,27 @@ const API = {
         data = text;
       }
 
+      const errMsg = () => {
+        if (typeof data === 'string' && data.trim()) return data.trim();
+        if (data && typeof data === 'object') {
+          return data.message || data.error || data.detail || null;
+        }
+        return null;
+      };
+
+      if (response.status === 401) {
+        console.warn('Unauthorized request. Clearing token.');
+        this.removeToken();
+        window.location.reload();
+        throw new Error('Oturum müddəti bitib. Yenidən daxil olun.');
+      }
+
+      if (response.status === 403) {
+        throw new Error(errMsg() || 'Bu əməliyyat üçün icazəniz yoxdur.');
+      }
+
       if (!response.ok) {
-        throw new Error(typeof data === 'string' ? data : (data && data.message) || 'Xəta baş verdi');
+        throw new Error(errMsg() || 'Xəta baş verdi');
       }
 
       return data;
