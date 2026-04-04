@@ -11,6 +11,8 @@ import com.example.educoursemanagementsystem.repository.CourseRepository;
 import com.example.educoursemanagementsystem.model.entity.Course;
 import com.example.educoursemanagementsystem.model.entity.User;
 import com.example.educoursemanagementsystem.model.entity.Student;
+import com.example.educoursemanagementsystem.exception.BadRequestException;
+import com.example.educoursemanagementsystem.exception.ResourceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,7 +45,7 @@ public class EnrollmentController {
             
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Logged in user not found in DB"));
+                .orElseThrow(() -> new ResourceNotFoundException("Logged in user not found in DB"));
                 
         Student student = studentRepository.findByEmail(email).orElse(null);
         if (student == null) {
@@ -60,12 +62,12 @@ public class EnrollmentController {
 
         if (request.getCourseName() != null && !request.getCourseName().trim().isEmpty()) {
             Course course = courseRepository.findByTitle(request.getCourseName())
-                    .orElseThrow(() -> new RuntimeException("Bu adda kurs tapılmadı: " + request.getCourseName()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Bu adda kurs tapılmadı: " + request.getCourseName()));
             request.setCourseId(course.getId());
         }
 
         if (request.getCourseId() == null) {
-            throw new RuntimeException("Kursa yazılmaq üçün 'courseName' və ya 'courseId' qeyd edilməlidir!");
+            throw new BadRequestException("Kursa yazılmaq üçün 'courseName' və ya 'courseId' qeyd edilməlidir!");
         }
 
         EnrollmentResponse response = enrollmentService.enrollStudent(request);

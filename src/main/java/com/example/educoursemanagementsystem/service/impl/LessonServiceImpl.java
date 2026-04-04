@@ -8,6 +8,7 @@ import com.example.educoursemanagementsystem.repository.StudentRepository;
 import com.example.educoursemanagementsystem.repository.EnrollmentRepository;
 
 
+import com.example.educoursemanagementsystem.exception.BadRequestException;
 import com.example.educoursemanagementsystem.exception.ResourceNotFoundException;
 import com.example.educoursemanagementsystem.model.dto.request.LessonRequest;
 import com.example.educoursemanagementsystem.model.dto.response.LessonResponse;
@@ -48,11 +49,11 @@ public class LessonServiceImpl implements LessonService {
                     .orElseThrow(() -> new ResourceNotFoundException("Müəllim tapılmadı: " + email));
             course = teacher.getCourse();
             if (course == null) {
-                throw new RuntimeException("Müəllim hələ bir kursa təyin edilməyib.");
+                throw new BadRequestException("Müəllim hələ bir kursa təyin edilməyib.");
             }
         } else {
             if (request.getCourseId() == null) {
-                throw new RuntimeException("CourseId boş ola bilməz (Admin üçün məcburidir).");
+                throw new BadRequestException("CourseId boş ola bilməz (Admin üçün məcburidir).");
             }
             course = courseRepository.findById(request.getCourseId())
                     .orElseThrow(() -> new ResourceNotFoundException("Kurs tapılmadı: " + request.getCourseId()));
@@ -100,7 +101,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public LessonResponse updateLesson(Long id, LessonRequest request) {
-        Lesson lesson=lessonRepository.findById(id).orElseThrow(()->new RuntimeException("Lesson not found"));
+        Lesson lesson=lessonRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Lesson not found"));
         lesson.setTitle(request.getTitle());
         lesson.setVideoURL(request.getVideoURL());
         lesson.setContent(request.getContent());
@@ -140,14 +141,14 @@ public class LessonServiceImpl implements LessonService {
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found: " + email));
 
         if (!student.getIsActive()) {
-            throw new RuntimeException("Student account is not active.");
+            throw new BadRequestException("Student account is not active.");
         }
 
         Enrollment enrollment = enrollmentRepository.findByStudentIdAndCourseId(student.getId(), courseId)
-                .orElseThrow(() -> new RuntimeException("You are not enrolled in this course."));
+                .orElseThrow(() -> new ResourceNotFoundException("You are not enrolled in this course."));
 
         if (!Boolean.TRUE.equals(enrollment.getIsActive()) || enrollment.getStatus() != EnrollmentStatus.ACTIVE) {
-            throw new RuntimeException("Your enrollment is not active or awaiting payment.");
+            throw new BadRequestException("Your enrollment is not active or awaiting payment.");
         }
 
         return lessonRepository.findByCourseIdAndIsActiveTrue(courseId).stream()
