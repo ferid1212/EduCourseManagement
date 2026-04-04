@@ -18,6 +18,9 @@ public class RegisterRequest {
     @Min(value = 18, message = "Age must be at least 18")
     @Max(value = 100, message = "Age cannot exceed 100")
     private Integer age;
-    @Pattern(regexp = "^994(50|51|55|99|70|77|10)\\d{7}$",message = "Please,Enter correct format for phone")
+    @Pattern(
+            regexp = "^994(50|51|55|99|70|77|10)[0-9]{7}$",
+            message = "Telefon nömrəsi düzgün formatda deyil (Məsələn: 99450XXXXXXX)"
+    )
     private String phone;
 }
