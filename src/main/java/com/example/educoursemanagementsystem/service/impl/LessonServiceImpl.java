@@ -3,6 +3,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
 import com.example.educoursemanagementsystem.model.entity.Teacher;
 import com.example.educoursemanagementsystem.repository.TeacherRepository;
+import com.example.educoursemanagementsystem.repository.StudentRepository;
+import com.example.educoursemanagementsystem.repository.EnrollmentRepository;
+import com.example.educoursemanagementsystem.model.entity.Student;
 
 
 import com.example.educoursemanagementsystem.exception.ResourceNotFoundException;
@@ -31,6 +34,8 @@ public class LessonServiceImpl implements LessonService {
     private final LessonMapper lessonMapper;
     private final CourseRepository courseRepository;
     private final TeacherRepository teacherRepository;
+    private final StudentRepository studentRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     @Override
     public LessonResponse createLesson(LessonRequest request) {
@@ -127,5 +132,26 @@ public class LessonServiceImpl implements LessonService {
         Lesson lesson=lessonRepository.deleteLessonById(id).orElseThrow(()->new ResourceNotFoundException("Lesson not found"));
 
 
+    }
+    @Override
+    public List<LessonResponse> getLessonsByCourseForStudent(Long courseId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+
+        Student student = studentRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found: " + email));
+
+        if (!student.getIsActive()) {
+            throw new RuntimeException("Student account is not active.");
+        }
+
+        boolean isEnrolled = enrollmentRepository.existsByStudentIdAndCourseIdAndIsActiveTrue(student.getId(), courseId);
+        if (!isEnrolled) {
+            throw new RuntimeException("You are not enrolled in this course.");
+        }
+
+        return lessonRepository.findByCourseIdAndIsActiveTrue(courseId).stream()
+                .map(lessonMapper::toLessonResponse)
+                .toList();
     }
 }

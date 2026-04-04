@@ -466,6 +466,33 @@
   </div>
 </div>
 
+<!-- Lessons View Modal (for Students) -->
+<div id="lessons-view-modal" class="modal-overlay">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 id="lessons-view-title">Kurs Dərsləri</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="data-section" style="max-height: 400px; overflow-y: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Dərs</th>
+              <th>Məzmun</th>
+              <th>Video</th>
+            </tr>
+          </thead>
+          <tbody id="lessons-view-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('lessons-view-modal')">Bağla</button>
+    </div>
+  </div>
+</div>
+
 <script src="/js/api.js"></script>
 <script src="/js/app.js"></script>
 </body>

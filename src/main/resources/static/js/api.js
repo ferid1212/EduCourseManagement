@@ -254,6 +254,9 @@ const API = {
     async getActive() {
       return API.request('/lessons/active');
     },
+    async getByCourse(courseId) {
+      return API.request(`/lessons/course/${courseId}`);
+    },
     async searchByTitle(title) {
       return API.request(`/lessons/title/${encodeURIComponent(title)}`);
     },

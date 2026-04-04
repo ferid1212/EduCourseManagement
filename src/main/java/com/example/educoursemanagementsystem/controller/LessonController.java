@@ -87,4 +87,11 @@ public class LessonController {
         lessonService.hardDeleteLesson(id);
         ResponseEntity.status(HttpStatus.OK).body("Lesson deleted.");
     }
+
+    @PreAuthorize("hasRole('STUDENT')")
+    @GetMapping("/course/{courseId}")
+    public ResponseEntity<List<LessonResponse>> getLessonsByCourse(@PathVariable Long courseId){
+        List<LessonResponse> responses = lessonService.getLessonsByCourseForStudent(courseId);
+        return ResponseEntity.status(HttpStatus.OK).body(responses);
+    }
 }

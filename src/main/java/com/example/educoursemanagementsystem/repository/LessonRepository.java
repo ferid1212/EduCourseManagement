@@ -12,5 +12,5 @@ public interface LessonRepository extends JpaRepository<Lesson,Long> {
     Optional<Lesson> deleteLessonById(Long id);
 
     List<Lesson> findByTitleContainingIgnoreCase(String title);
-
+    List<Lesson> findByCourseIdAndIsActiveTrue(Long courseId);
 }

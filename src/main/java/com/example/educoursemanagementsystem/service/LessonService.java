@@ -23,4 +23,6 @@ public interface LessonService {
     void softDeleteLesson(Long id);
 
     void hardDeleteLesson(Long id);
+
+    List<LessonResponse> getLessonsByCourseForStudent(Long courseId);
 }

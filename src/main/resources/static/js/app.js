@@ -881,6 +881,31 @@ const Lessons = {
       Toast.error(err.message);
     }
   },
+
+  async viewByCourse(courseId, courseTitle) {
+    document.getElementById('lessons-view-title').textContent = `${courseTitle} — Dərslər`;
+    showLoading('lessons-view-body');
+    openModal('lessons-view-modal');
+
+    try {
+      const data = await API.lessons.getByCourse(courseId);
+      const tbody = document.getElementById('lessons-view-body');
+      
+      if (!Array.isArray(data) || !data.length) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 20px;">Bu kurs üçün hələ dərs əlavə edilməyib.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.map(l => `<tr>
+        <td><strong>${l.title}</strong></td>
+        <td>${l.content ? (l.content.substring(0, 50) + (l.content.length > 50 ? '...' : '')) : '—'}</td>
+        <td>${l.videoURL ? `<a href="${l.videoURL}" target="_blank" class="btn btn-sm btn-primary">🎬 İzlə</a>` : '—'}</td>
+      </tr>`).join('');
+    } catch (err) {
+      Toast.error(err.message);
+      closeModal('lessons-view-modal');
+    }
+  },
 };
 
 // === Enrollments ===
@@ -917,6 +942,7 @@ const Enrollments = {
           <button class="btn btn-sm btn-danger" onclick="Enrollments.cancel(${e.id})" title="Ləğv et">❌</button>
         ` : ''}
         ${App.role === 'STUDENT' && e.status !== 'CANCELLED' ? `
+          <button class="btn btn-sm btn-primary" onclick="Lessons.viewByCourse(${e.courseId}, '${e.courseTitle?.replace(/'/g, "\\'")}')" title="Dərslərə Bax">📖 Dərslər</button>
           <button class="btn btn-sm btn-danger" onclick="Enrollments.cancel(${e.id})" title="Ləğv et">❌ Ləğv</button>
         ` : ''}
       </td>
