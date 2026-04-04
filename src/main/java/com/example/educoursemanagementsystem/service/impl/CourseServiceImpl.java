@@ -52,7 +52,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void hardDelete(Long id) {
-        Course course = courseRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Course not found."));
+        Course course = courseRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Kurs tapılmadı."));
         courseRepository.delete(course);
     }
 
@@ -85,7 +85,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void update(Long id, CourseRequestDTO courseRequestDTO) {
-        Course course=courseRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Course not found."));
+        Course course=courseRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Kurs tapılmadı."));
         course.setTitle(courseRequestDTO.getTitle());
         course.setDescription(courseRequestDTO.getDescription());
         course.setDuration(courseRequestDTO.getDuration());

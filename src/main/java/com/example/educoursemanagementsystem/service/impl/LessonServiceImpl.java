@@ -46,17 +46,17 @@ public class LessonServiceImpl implements LessonService {
         Course course;
         if (isTeacher) {
             Teacher teacher = teacherRepository.getTeachersByEmail(email)
-                    .orElseThrow(() -> new ResourceNotFoundException("Müəllim tapılmadı: " + email));
+                    .orElseThrow(() -> new ResourceNotFoundException("Teacher not found: " + email));
             course = teacher.getCourse();
             if (course == null) {
-                throw new BadRequestException("Müəllim hələ bir kursa təyin edilməyib.");
+                throw new BadRequestException("Teacher is not assigned to a course yet.");
             }
         } else {
             if (request.getCourseId() == null) {
-                throw new BadRequestException("CourseId boş ola bilməz (Admin üçün məcburidir).");
+                throw new BadRequestException("CourseId cannot be empty (Required for Admin).");
             }
             course = courseRepository.findById(request.getCourseId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Kurs tapılmadı: " + request.getCourseId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Course not found: " + request.getCourseId()));
         }
 
         Lesson lesson = Lesson.builder()
@@ -140,7 +140,7 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public LessonResponse updateVideoUrl(Long lessonId, String videoUrl) {
         Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Dərs tapılmadı"));
         
         checkTeacherAccess(lesson);
         
@@ -175,17 +175,17 @@ public class LessonServiceImpl implements LessonService {
         if (hasRole(auth, "ROLE_TEACHER")) {
             Course course = getTeacherCourseOrThrow(auth.getName());
             if (!lesson.getCourse().getId().equals(course.getId())) {
-                throw new BadRequestException("Bu dərs üzərində əməliyyat aparmaq üçün icazəniz yoxdur.");
+                throw new BadRequestException("You do not have permission to perform operations on this lesson.");
             }
         }
     }
 
     private Course getTeacherCourseOrThrow(String email) {
         Teacher teacher = teacherRepository.getTeachersByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Müəllim tapılmadı: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found: " + email));
         Course course = teacher.getCourse();
         if (course == null) {
-            throw new BadRequestException("Müəllim hələ bir kursa təyin edilməyib.");
+            throw new BadRequestException("Teacher is not assigned to a course yet.");
         }
         return course;
     }

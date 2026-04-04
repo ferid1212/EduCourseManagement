@@ -25,7 +25,7 @@ public class StudentServiceImpl implements StudentService {
 
     public StudentResponse createStudent(StudentRequest request){
         if(studentRepository.existsByEmail(request.getEmail())){
-            throw new AlreadyExistsException("Bu email artıq mövcuddur: " + request.getEmail());
+            throw new AlreadyExistsException("This email already exists: " + request.getEmail());
         }
 
         Student student=Student.builder()

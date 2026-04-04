@@ -62,12 +62,12 @@ public class EnrollmentController {
 
         if (request.getCourseName() != null && !request.getCourseName().trim().isEmpty()) {
             Course course = courseRepository.findByTitle(request.getCourseName())
-                    .orElseThrow(() -> new ResourceNotFoundException("Bu adda kurs tapılmadı: " + request.getCourseName()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Course with this name not found: " + request.getCourseName()));
             request.setCourseId(course.getId());
         }
 
         if (request.getCourseId() == null) {
-            throw new BadRequestException("Kursa yazılmaq üçün 'courseName' və ya 'courseId' qeyd edilməlidir!");
+            throw new BadRequestException("Either 'courseName' or 'courseId' must be provided for enrollment!");
         }
 
         EnrollmentResponse response = enrollmentService.enrollStudent(request);
@@ -80,7 +80,7 @@ public class EnrollmentController {
         if (isStudentOnlyUser()) {
             Long sid = currentUserStudentIdOrThrow();
             if (!Objects.equals(response.getStudentId(), sid)) {
-                throw new AccessDeniedException("Bu qeydiyyata baxmaq üçün icazəniz yoxdur.");
+                throw new AccessDeniedException("You do not have permission to view this enrollment.");
             }
         }
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -106,7 +106,7 @@ public class EnrollmentController {
         if (isStudentOnlyUser()) {
             Long sid = currentUserStudentIdOrThrow();
             if (!studentId.equals(sid)) {
-                throw new AccessDeniedException("Yalnız öz qeydiyyatlarınızı görə bilərsiniz.");
+                throw new AccessDeniedException("You can only see your own enrollments.");
             }
         }
         List<EnrollmentResponse> responses = enrollmentService.getEnrollmentsByStudent(studentId);
@@ -117,7 +117,7 @@ public class EnrollmentController {
     public ResponseEntity<List<EnrollmentResponse>> getEnrollmentsByCourse(
             @PathVariable Long courseId) {
         if (isStudentOnlyUser()) {
-            throw new AccessDeniedException("Bu siyahıya baxmaq üçün icazəniz yoxdur.");
+            throw new AccessDeniedException("You do not have permission to view this list.");
         }
         List<EnrollmentResponse> responses = enrollmentService.getEnrollmentsByCourse(courseId);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
@@ -127,7 +127,7 @@ public class EnrollmentController {
     public ResponseEntity<List<EnrollmentResponse>> getEnrollmentsByStatus(
             @PathVariable EnrollmentStatus status) {
         if (isStudentOnlyUser()) {
-            throw new AccessDeniedException("Bu siyahıya baxmaq üçün icazəniz yoxdur.");
+            throw new AccessDeniedException("You do not have permission to view this list.");
         }
         List<EnrollmentResponse> responses = enrollmentService.getEnrollmentsByStatus(status);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
@@ -138,7 +138,7 @@ public class EnrollmentController {
             @PathVariable Long id,
             @RequestParam EnrollmentStatus status) {
         if (isStudentOnlyUser()) {
-            throw new AccessDeniedException("Status dəyişdirmək üçün icazəniz yoxdur.");
+            throw new AccessDeniedException("You do not have permission to change the status.");
         }
         EnrollmentResponse response = enrollmentService.updateStatus(id, status);
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -147,7 +147,7 @@ public class EnrollmentController {
     @PutMapping("/{id}/complete")
     public ResponseEntity<EnrollmentResponse> completeEnrollment(@PathVariable Long id) {
         if (isStudentOnlyUser()) {
-            throw new AccessDeniedException("Qeydiyyatı tamamlamaq üçün icazəniz yoxdur.");
+            throw new AccessDeniedException("You do not have permission to complete the enrollment.");
         }
         EnrollmentResponse response = enrollmentService.completeEnrollment(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -160,7 +160,7 @@ public class EnrollmentController {
             Long studentId = currentUserStudentIdOrThrow();
             EnrollmentResponse enrollment = enrollmentService.getEnrollmentById(id);
             if (!Objects.equals(enrollment.getStudentId(), studentId)) {
-                throw new AccessDeniedException("Yalnız öz qeydiyyatınız üçün ödəniş edə bilərsiniz.");
+                throw new AccessDeniedException("You can only pay for your own enrollment.");
             }
         }
         EnrollmentResponse response = enrollmentService.payEnrollment(id);
@@ -177,7 +177,7 @@ public class EnrollmentController {
     @DeleteMapping("/hard/{id}")
     public ResponseEntity<String> hardDeleteEnrollment(@PathVariable Long id) {
         if (isStudentOnlyUser()) {
-            throw new AccessDeniedException("Bu əməliyyat üçün icazəniz yoxdur.");
+            throw new AccessDeniedException("You do not have permission for this operation.");
         }
         enrollmentService.hardDeleteEnrollment(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -186,7 +186,7 @@ public class EnrollmentController {
     @GetMapping("/course/{courseId}/count")
     public ResponseEntity<Long> getActiveStudentCount(@PathVariable Long courseId) {
         if (isStudentOnlyUser()) {
-            throw new AccessDeniedException("Bu məlumata baxmaq üçün icazəniz yoxdur.");
+            throw new AccessDeniedException("You do not have permission to view this information.");
         }
         long count = enrollmentService.getActiveStudentCountInCourse(courseId);
         return ResponseEntity.status(HttpStatus.OK).body(count);
@@ -199,7 +199,7 @@ public class EnrollmentController {
         if (isStudentOnlyUser()) {
             Long sid = currentUserStudentIdOrThrow();
             if (!studentId.equals(sid)) {
-                throw new AccessDeniedException("Yalnız öz qeydiyyatınızı yoxlaya bilərsiniz.");
+                throw new AccessDeniedException("You can only check your own enrollment.");
             }
         }
         boolean enrolled = enrollmentService.isStudentEnrolledInCourse(studentId, courseId);
@@ -226,6 +226,6 @@ public class EnrollmentController {
 
     private Long currentUserStudentIdOrThrow() {
         return currentUserStudentId()
-                .orElseThrow(() -> new AccessDeniedException("Tələbə profili tapılmadı."));
+                .orElseThrow(() -> new AccessDeniedException("Student profile not found."));
     }
 }

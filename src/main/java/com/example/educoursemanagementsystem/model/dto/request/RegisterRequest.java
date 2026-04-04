@@ -11,7 +11,7 @@ public class RegisterRequest {
     private String lastName;
     @Email
     private String email;
-    @Size(min = 6, message = "Password ən azı 6 simvol olmalıdır")
+    @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
     private Long courseId;
     @NotNull(message = "Age is required")
@@ -20,7 +20,7 @@ public class RegisterRequest {
     private Integer age;
     @Pattern(
             regexp = "^994(50|51|55|99|70|77|10)[0-9]{7}$",
-            message = "Telefon nömrəsi düzgün formatda deyil (Məsələn: 99450XXXXXXX)"
+            message = "Phone number is not in the correct format (Example: 99450XXXXXXX)"
     )
     private String phone;
 }

@@ -51,7 +51,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         if (enrollmentRepository.existsByStudentIdAndCourseIdAndIsActiveTrue(
                 request.getStudentId(), request.getCourseId())) {
             throw new AlreadyExistsException(
-                    "Siz bu kursdan zatən qeydiyyatdan keçmisiz.");
+                    "You are already enrolled in this course.");
         }
 
         Optional<Enrollment> previous = enrollmentRepository.findByStudentIdAndCourseId(
@@ -60,7 +60,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             Enrollment existing = previous.get();
             if (Boolean.TRUE.equals(existing.getIsActive())) {
                 throw new AlreadyExistsException(
-                        "Siz bu kursdan zatən qeydiyyatdan keçmisiz.");
+                        "You are already enrolled in this course.");
             }
             existing.setIsActive(true);
             existing.setStatus(EnrollmentStatus.PENDING);
@@ -165,7 +165,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         if (studentIdIfRestricted != null) {
             Long ownerId = enrollment.getStudent() != null ? enrollment.getStudent().getId() : null;
             if (!Objects.equals(ownerId, studentIdIfRestricted)) {
-                throw new AccessDeniedException("Bu qeydiyyatı ləğv etmək üçün icazəniz yoxdur.");
+                throw new AccessDeniedException("You do not have permission to cancel this enrollment.");
             }
         }
         // DB-də enrollments_status_check CANCELLED qəbul etməyə bilər; ləğv üçün kifayətdir ki, siyahılarda is_active=false süzülür.
@@ -197,7 +197,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     public EnrollmentResponse payEnrollment(Long enrollmentId) {
         log.info("Processing payment for enrollment: {}", enrollmentId);
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found: " + enrollmentId));
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment finished: " + enrollmentId));
         
         enrollment.setIsPaid(true);
         enrollment.setStatus(EnrollmentStatus.ACTIVE);

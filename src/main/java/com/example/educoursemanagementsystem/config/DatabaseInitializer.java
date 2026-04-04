@@ -36,9 +36,9 @@ public class DatabaseInitializer implements CommandLineRunner {
             admin.setRole(Role.ADMIN);
             admin.setIsActive(true);
             admin.setPhone("994501234567");
-            System.out.println("Yeni ADMIN yaradildi: admin@example.com / admin20062008");
+            System.out.println("New ADMIN created: admin@example.com / admin20062008");
         } else {
-            System.out.println("Mövcud ADMIN parolu yeniləndi: admin@example.com / admin20062008");
+            System.out.println("Existing ADMIN password updated: admin@example.com / admin20062008");
         }
         
         admin.setPassword(passwordEncoder.encode("admin20062008"));

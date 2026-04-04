@@ -33,14 +33,14 @@ public class TeacherServiceImpl implements TeacherService {
     public TeacherResponse createTeacher(TeacherRequest request) {
 
         if (teacherRepository.existsByEmail(request.getEmail())) {
-            throw new AlreadyExistsException("Bu email artıq mövcuddur: " + request.getEmail());
+            throw new AlreadyExistsException("This email already exists: " + request.getEmail());
         }
 
 
         Course course = null;
         if (request.getCourseId() != null) {
             course = courseRepository.findById(request.getCourseId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Kurs tapılmadı: " + request.getCourseId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Course not found: " + request.getCourseId()));
         }
 
 

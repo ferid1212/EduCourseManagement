@@ -56,13 +56,13 @@ public class GlobalExceptionHandler {
         String msg = cause != null ? cause.getMessage() : ex.getMessage();
         log.error("Data integrity violation: {}", msg, ex);
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(msg != null ? msg : "Məlumat bazası məhdudiyyəti pozuldu.");
+                .body(msg != null ? msg : "Database constraint violation.");
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneralException(Exception ex) {
         log.error("Unexpected error: ", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Gözlənilməz xəta baş verdi: " + ex.getMessage());
+                .body("An unexpected error occurred: " + ex.getMessage());
     }
 }

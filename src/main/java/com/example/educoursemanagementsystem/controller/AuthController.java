@@ -31,7 +31,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("Bu hesab (email) artıq mövcuddur!");
+            return ResponseEntity.badRequest().body("This account (email) already exists!");
         }
         User user = new User();
         user.setFirstName(request.getFirstName());
