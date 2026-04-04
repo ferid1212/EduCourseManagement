@@ -1,11 +1,11 @@
-# Build stage
-FROM gradle:8.4-jdk17-alpine AS build
+# Build mərhələsi
+FROM gradle:8.4-jdk17 AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-RUN gradle build --no-daemon -x test
+RUN ./gradlew build -x test --no-daemon
 
-# Runtime stage
-FROM eclipse-temurin:17-jre-alpine
-EXPOSE 8081
-COPY --from=build /home/gradle/src/build/libs/*[!plain].jar /app/app.jar
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# Run mərhələsi
+FROM openjdk:17-jdk-slim
+EXPOSE 8080
+COPY --from=build /home/gradle/src/build/libs/*-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"]
