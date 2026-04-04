@@ -27,18 +27,21 @@ public class DatabaseInitializer implements CommandLineRunner {
             System.err.println("Error dropping DB constraint: " + e.getMessage());
         }
 
-        if (!userRepository.existsByRole(Role.ADMIN)) {
-            User admin = new User();
+        User admin = userRepository.findByEmail("admin@example.com").orElse(null);
+        if (admin == null) {
+            admin = new User();
             admin.setEmail("admin@example.com");
-            admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setFirstName("System");
             admin.setLastName("Admin");
             admin.setRole(Role.ADMIN);
             admin.setIsActive(true);
             admin.setPhone("994501234567");
-
-            userRepository.save(admin);
-            System.out.println("Avtomatik ADMIN yaradildi: admin@example.com / admin123");
+            System.out.println("Yeni ADMIN yaradildi: admin@example.com / admin20062008");
+        } else {
+            System.out.println("Mövcud ADMIN parolu yeniləndi: admin@example.com / admin20062008");
         }
+        
+        admin.setPassword(passwordEncoder.encode("admin20062008"));
+        userRepository.save(admin);
     }
 }
